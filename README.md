@@ -1,39 +1,62 @@
-<div align="center">
+<p align="center">
+  <img src="Assets/logo.png" alt="SwiftRouter" width="200"/>
+</p>
 
-# 🧭 SwiftRouter
+<h1 align="center">SwiftRouter</h1>
 
-**Type-safe deep linking & navigation router for iOS with async/await support**
+<p align="center">
+  <strong>🧭 Type-safe deep linking & navigation router for iOS with async/await</strong>
+</p>
 
-[![Swift](https://img.shields.io/badge/Swift-5.9+-F05138?style=for-the-badge&logo=swift&logoColor=white)](https://swift.org)
-[![iOS](https://img.shields.io/badge/iOS-15.0+-000000?style=for-the-badge&logo=apple&logoColor=white)](https://developer.apple.com/ios/)
-[![SPM](https://img.shields.io/badge/SPM-Compatible-FA7343?style=for-the-badge&logo=swift&logoColor=white)](https://swift.org/package-manager/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/muhittincamdali/SwiftRouter/ci.yml?style=for-the-badge&logo=github)](https://github.com/muhittincamdali/SwiftRouter/actions)
+<p align="center">
+  <a href="https://github.com/muhittincamdali/SwiftRouter/actions/workflows/ci.yml">
+    <img src="https://github.com/muhittincamdali/SwiftRouter/actions/workflows/ci.yml/badge.svg" alt="CI"/>
+  </a>
+  <img src="https://img.shields.io/badge/Swift-6.0-orange.svg" alt="Swift 6.0"/>
+  <img src="https://img.shields.io/badge/iOS-17.0+-blue.svg" alt="iOS 17.0+"/>
+  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"/>
+</p>
 
-[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Documentation](#-documentation)
-
-</div>
-
----
-
-## ✨ Features
-
-- 🔗 **Type-Safe Routing** — Compile-time checked routes with associated values
-- 🌊 **Deep Linking** — Handle any URL scheme with automatic parameter extraction
-- ⚡ **Async/Await** — Modern Swift concurrency support throughout
-- 🎯 **Universal Links** — Full support for iOS Universal Links
-- 📱 **SwiftUI & UIKit** — Works with both frameworks seamlessly
-- 🔄 **State Restoration** — Automatic navigation state persistence
-- 🧪 **Testable** — Designed for easy unit testing with mock support
-- 📦 **Zero Dependencies** — Pure Swift implementation
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#deep-linking">Deep Linking</a> •
+  <a href="#documentation">Documentation</a>
+</p>
 
 ---
 
-## 📦 Installation
+## Why SwiftRouter?
+
+Navigation in SwiftUI can get messy. Deep linking requires parsing URLs manually. State restoration is complex. **SwiftRouter** provides a declarative, type-safe solution.
+
+```swift
+// Before: Scattered navigation logic
+NavigationLink(destination: UserView(id: userId)) { ... }
+// Deep link parsing in AppDelegate
+// State restoration in SceneDelegate
+
+// After: Unified routing
+router.navigate(to: .user(id: userId))
+// Deep links handled automatically
+// State restored automatically
+```
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| 🎯 **Type-Safe** | Compile-time route validation |
+| 🔗 **Deep Linking** | Universal links & URL schemes |
+| 💾 **State Restoration** | Automatic navigation state persistence |
+| ⚡ **Async/Await** | Modern Swift concurrency |
+| 🧪 **Testable** | Easy navigation testing |
+| 📱 **SwiftUI Native** | Built for SwiftUI |
+
+## Installation
 
 ### Swift Package Manager
-
-Add to your `Package.swift`:
 
 ```swift
 dependencies: [
@@ -41,125 +64,336 @@ dependencies: [
 ]
 ```
 
-Or in Xcode: **File → Add Package Dependencies** → Enter URL
+## Quick Start
 
----
-
-## 🚀 Quick Start
-
-### Define Routes
+### 1. Define Routes
 
 ```swift
 import SwiftRouter
 
 enum AppRoute: Route {
     case home
-    case profile(userId: String)
+    case user(id: String)
     case settings
-    case product(id: Int, variant: String?)
+    case product(id: String, color: String?)
     
     var path: String {
         switch self {
         case .home: return "/"
-        case .profile(let userId): return "/profile/\(userId)"
+        case .user(let id): return "/user/\(id)"
         case .settings: return "/settings"
-        case .product(let id, let variant): 
-            return "/product/\(id)" + (variant.map { "?variant=\($0)" } ?? "")
+        case .product(let id, _): return "/product/\(id)"
         }
     }
 }
 ```
 
-### Setup Router
+### 2. Setup Router
 
 ```swift
-let router = Router<AppRoute>()
-
-// Register route handlers
-router.register(.home) { route in
-    HomeView()
-}
-
-router.register(.profile) { route in
-    if case .profile(let userId) = route {
-        ProfileView(userId: userId)
-    }
-}
-```
-
-### Navigate
-
-```swift
-// Programmatic navigation
-await router.navigate(to: .profile(userId: "123"))
-
-// Deep link handling
-router.handle(url: URL(string: "myapp://profile/123")!)
-
-// With animation
-await router.navigate(to: .settings, animated: true)
-```
-
-### SwiftUI Integration
-
-```swift
-struct ContentView: View {
+@main
+struct MyApp: App {
     @StateObject var router = Router<AppRoute>()
     
-    var body: some View {
-        NavigationStack(path: $router.path) {
-            HomeView()
-                .navigationDestination(for: AppRoute.self) { route in
-                    router.view(for: route)
+    var body: some Scene {
+        WindowGroup {
+            RouterView(router: router) { route in
+                switch route {
+                case .home:
+                    HomeView()
+                case .user(let id):
+                    UserView(userId: id)
+                case .settings:
+                    SettingsView()
+                case .product(let id, let color):
+                    ProductView(id: id, color: color)
                 }
+            }
         }
-        .environmentObject(router)
     }
 }
 ```
 
+### 3. Navigate
+
+```swift
+struct HomeView: View {
+    @EnvironmentObject var router: Router<AppRoute>
+    
+    var body: some View {
+        VStack {
+            Button("View Profile") {
+                router.push(.user(id: "123"))
+            }
+            
+            Button("Settings") {
+                router.push(.settings)
+            }
+        }
+    }
+}
+```
+
+## Navigation Methods
+
+### Push
+
+```swift
+router.push(.user(id: "123"))
+```
+
+### Pop
+
+```swift
+router.pop()
+router.popToRoot()
+router.pop(to: .home)
+```
+
+### Replace
+
+```swift
+router.replace(with: .home)
+```
+
+### Present (Modal)
+
+```swift
+router.present(.settings, style: .sheet)
+router.present(.login, style: .fullScreen)
+```
+
+### Dismiss
+
+```swift
+router.dismiss()
+```
+
+## Deep Linking
+
+### URL Scheme
+
+```swift
+// myapp://user/123
+extension AppRoute {
+    init?(url: URL) {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            return nil
+        }
+        
+        let pathComponents = components.path.split(separator: "/")
+        
+        switch pathComponents.first {
+        case "user":
+            guard let id = pathComponents.dropFirst().first else { return nil }
+            self = .user(id: String(id))
+        case "settings":
+            self = .settings
+        default:
+            return nil
+        }
+    }
+}
+```
+
+### Universal Links
+
+```swift
+// Handle in App
+@main
+struct MyApp: App {
+    @StateObject var router = Router<AppRoute>()
+    
+    var body: some Scene {
+        WindowGroup {
+            RouterView(router: router) { ... }
+                .onOpenURL { url in
+                    if let route = AppRoute(url: url) {
+                        router.handle(route)
+                    }
+                }
+        }
+    }
+}
+```
+
+### apple-app-site-association
+
+```json
+{
+  "applinks": {
+    "apps": [],
+    "details": [{
+      "appID": "TEAM_ID.com.myapp",
+      "paths": ["/user/*", "/product/*", "/settings"]
+    }]
+  }
+}
+```
+
+## State Restoration
+
+Automatically save and restore navigation state:
+
+```swift
+let router = Router<AppRoute>(
+    persistence: .userDefaults,
+    key: "navigation_state"
+)
+
+// State is automatically saved on navigation changes
+// and restored on app launch
+```
+
+## Tab Navigation
+
+```swift
+struct MainView: View {
+    @StateObject var homeRouter = Router<HomeRoute>()
+    @StateObject var profileRouter = Router<ProfileRoute>()
+    
+    var body: some View {
+        TabView {
+            RouterView(router: homeRouter) { ... }
+                .tabItem { Label("Home", systemImage: "house") }
+            
+            RouterView(router: profileRouter) { ... }
+                .tabItem { Label("Profile", systemImage: "person") }
+        }
+    }
+}
+```
+
+## Middleware
+
+Add custom logic before navigation:
+
+```swift
+router.addMiddleware { route, action in
+    // Analytics
+    Analytics.track("navigate_to_\(route.path)")
+    
+    // Auth check
+    if route.requiresAuth && !isLoggedIn {
+        return .redirect(to: .login)
+    }
+    
+    return .continue
+}
+```
+
+## Async Navigation
+
+```swift
+Button("Load & Navigate") {
+    Task {
+        let user = try await api.fetchUser(id: "123")
+        await router.push(.user(id: user.id))
+    }
+}
+```
+
+## Testing
+
+```swift
+class NavigationTests: XCTestCase {
+    func testUserNavigation() {
+        let router = Router<AppRoute>()
+        
+        router.push(.user(id: "123"))
+        
+        XCTAssertEqual(router.currentRoute, .user(id: "123"))
+        XCTAssertEqual(router.stack.count, 2)
+    }
+    
+    func testDeepLink() {
+        let router = Router<AppRoute>()
+        let url = URL(string: "myapp://user/456")!
+        
+        router.handle(url: url)
+        
+        XCTAssertEqual(router.currentRoute, .user(id: "456"))
+    }
+}
+```
+
+## Best Practices
+
+### Route Organization
+
+```swift
+// ✅ Good: Grouped by feature
+enum AppRoute: Route {
+    case home
+    case auth(AuthRoute)
+    case profile(ProfileRoute)
+    case settings(SettingsRoute)
+}
+
+enum AuthRoute: Route {
+    case login
+    case register
+    case forgotPassword
+}
+```
+
+### Type-Safe Parameters
+
+```swift
+// ✅ Good: Strong types
+case user(id: User.ID)
+case product(id: Product.ID, variant: Product.Variant)
+
+// ❌ Avoid: Raw strings
+case user(id: String)
+```
+
+## API Reference
+
+### Router
+
+```swift
+class Router<R: Route>: ObservableObject {
+    var currentRoute: R
+    var stack: [R]
+    
+    func push(_ route: R)
+    func pop()
+    func popToRoot()
+    func replace(with route: R)
+    func present(_ route: R, style: PresentationStyle)
+    func dismiss()
+    func handle(url: URL)
+}
+```
+
+### Route Protocol
+
+```swift
+protocol Route: Hashable, Codable {
+    var path: String { get }
+    init?(url: URL)
+}
+```
+
+## Examples
+
+See [Examples](Examples/):
+- **BasicNavigation** - Simple push/pop
+- **DeepLinking** - URL handling
+- **TabBar** - Multi-router tabs
+- **Authentication** - Protected routes
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+MIT License
+
 ---
 
-## 📚 Documentation
-
-| Resource | Description |
-|----------|-------------|
-| [Getting Started](Documentation/GettingStarted.md) | Step-by-step guide |
-| [Deep Linking](Documentation/DeepLinking.md) | URL handling |
-| [State Restoration](Documentation/StateRestoration.md) | Persistence |
-| [API Reference](Documentation/API.md) | Full API docs |
-
----
-
-## 🛠 Requirements
-
-| Platform | Minimum Version |
-|----------|----------------|
-| iOS | 15.0+ |
-| macOS | 12.0+ |
-| tvOS | 15.0+ |
-| watchOS | 8.0+ |
-| Swift | 5.9+ |
-| Xcode | 15.0+ |
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md).
-
----
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-## 👨‍💻 Author
-
-**Muhittin Camdali** • [@muhittincamdali](https://github.com/muhittincamdali)
-
----
-
-<p align="center">Made with ❤️ in Istanbul</p>
+<p align="center">
+  <sub>Navigate with confidence 🧭</sub>
+</p>
