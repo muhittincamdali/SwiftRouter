@@ -1,60 +1,82 @@
-<p align="center">
-  <img src="Assets/logo.png" alt="SwiftRouter" width="200"/>
-</p>
+```
+   _____ _    _ _____ ______ _______ _____   ____  _    _ _______ ______ _____  
+  / ____| |  | |_   _|  ____|__   __|  __ \ / __ \| |  | |__   __|  ____|  __ \ 
+ | (___ | |  | | | | | |__     | |  | |__) | |  | | |  | |  | |  | |__  | |__) |
+  \___ \| |  | | | | |  __|    | |  |  _  /| |  | | |  | |  | |  |  __| |  _  / 
+  ____) | |__| |_| |_| |       | |  | | \ \| |__| | |__| |  | |  | |____| | \ \ 
+ |_____/ \____/|_____|_|       |_|  |_|  \_\\____/ \____/   |_|  |______|_|  \_\
+```
 
-<h1 align="center">SwiftRouter</h1>
-
 <p align="center">
-  <strong>🧭 Type-safe deep linking & navigation router for iOS with async/await</strong>
+  <strong>🧭 The most powerful, type-safe navigation router for iOS</strong>
 </p>
 
 <p align="center">
   <a href="https://github.com/muhittincamdali/SwiftRouter/actions/workflows/ci.yml">
     <img src="https://github.com/muhittincamdali/SwiftRouter/actions/workflows/ci.yml/badge.svg" alt="CI"/>
   </a>
-  <img src="https://img.shields.io/badge/Swift-6.0-orange.svg" alt="Swift 6.0"/>
-  <img src="https://img.shields.io/badge/iOS-17.0+-blue.svg" alt="iOS 17.0+"/>
-  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"/>
+  <a href="https://codecov.io/gh/muhittincamdali/SwiftRouter">
+    <img src="https://codecov.io/gh/muhittincamdali/SwiftRouter/branch/main/graph/badge.svg" alt="codecov"/>
+  </a>
+  <img src="https://img.shields.io/badge/Swift-5.9+-orange.svg" alt="Swift 5.9+"/>
+  <img src="https://img.shields.io/badge/iOS-15.0+-blue.svg" alt="iOS 15.0+"/>
+  <img src="https://img.shields.io/badge/macOS-13.0+-purple.svg" alt="macOS 13.0+"/>
+  <a href="https://github.com/muhittincamdali/SwiftRouter/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"/>
+  </a>
+  <a href="https://swift.org/package-manager/">
+    <img src="https://img.shields.io/badge/SPM-compatible-brightgreen.svg" alt="SPM"/>
+  </a>
 </p>
 
 <p align="center">
-  <a href="#features">Features</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#quick-start">Quick Start</a> •
-  <a href="#deep-linking">Deep Linking</a> •
-  <a href="#documentation">Documentation</a>
+  <a href="#-features">Features</a> •
+  <a href="#-installation">Installation</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-architecture">Architecture</a> •
+  <a href="#-advanced-usage">Advanced</a> •
+  <a href="#-migration">Migration</a> •
+  <a href="#-documentation">Documentation</a>
 </p>
 
 ---
 
 ## Why SwiftRouter?
 
-Navigation in SwiftUI can get messy. Deep linking requires parsing URLs manually. State restoration is complex. **SwiftRouter** provides a declarative, type-safe solution.
+Navigation in iOS apps is often **scattered, hard to test, and tightly coupled** to views. Deep linking requires manual URL parsing. State restoration is complex. **SwiftRouter** solves all of this.
 
 ```swift
-// Before: Scattered navigation logic
-NavigationLink(destination: UserView(id: userId)) { ... }
+// ❌ Before: Scattered, untestable navigation
+NavigationLink(destination: ProfileView(userId: userId)) { ... }
 // Deep link parsing in AppDelegate
 // State restoration in SceneDelegate
+// No middleware, no analytics, no auth checks
 
-// After: Unified routing
-router.navigate(to: .user(id: userId))
-// Deep links handled automatically
-// State restored automatically
+// ✅ After: Unified, type-safe, testable routing
+router.push(ProfileRoute(userId: userId))
+// Deep links work automatically
+// State persists automatically
+// Middleware handles auth, analytics, logging
 ```
 
-## Features
+## 🌟 Features
 
 | Feature | Description |
 |---------|-------------|
-| 🎯 **Type-Safe** | Compile-time route validation |
-| 🔗 **Deep Linking** | Universal links & URL schemes |
-| 💾 **State Restoration** | Automatic navigation state persistence |
-| ⚡ **Async/Await** | Modern Swift concurrency |
-| 🧪 **Testable** | Easy navigation testing |
-| 📱 **SwiftUI Native** | Built for SwiftUI |
+| 🎯 **Type-Safe Routes** | Compile-time validation with Swift's type system |
+| 🔗 **Deep Linking** | URL schemes and Universal Links out of the box |
+| 💾 **State Persistence** | Automatic navigation state save/restore |
+| ⚡ **Async/Await** | Modern Swift concurrency throughout |
+| 🧪 **100% Testable** | Mock router for unit testing |
+| 🛡️ **Auth Middleware** | Built-in authentication guards |
+| 📊 **Analytics Middleware** | Track every navigation event |
+| 📱 **SwiftUI Native** | First-class SwiftUI support |
+| 🎨 **UIKit Support** | Full UINavigationController integration |
+| 🗂️ **Tab Navigation** | Multi-tab with independent stacks |
+| 📐 **Split View** | iPad split view support |
+| 🎭 **Coordinator Pattern** | Built-in coordinator support |
 
-## Installation
+## 📦 Installation
 
 ### Swift Package Manager
 
@@ -64,26 +86,54 @@ dependencies: [
 ]
 ```
 
-## Quick Start
+### CocoaPods
 
-### 1. Define Routes
+```ruby
+pod 'SwiftRouter', '~> 1.0'
+```
+
+## 🚀 Quick Start
+
+### 1. Define Your Routes
 
 ```swift
 import SwiftRouter
 
-enum AppRoute: Route {
-    case home
-    case user(id: String)
-    case settings
-    case product(id: String, color: String?)
+struct HomeRoute: Route {
+    static let pattern = "/home"
+    var parameters: RouteParameters { [:] }
     
-    var path: String {
-        switch self {
-        case .home: return "/"
-        case .user(let id): return "/user/\(id)"
-        case .settings: return "/settings"
-        case .product(let id, _): return "/product/\(id)"
+    init(parameters: RouteParameters) throws {}
+}
+
+struct ProfileRoute: Route {
+    static let pattern = "/profile/:userId"
+    let userId: String
+    
+    var parameters: RouteParameters {
+        ["userId": .string(userId)]
+    }
+    
+    init(parameters: RouteParameters) throws {
+        guard let userId = parameters.string(for: "userId") else {
+            throw RouteError.missingParameter("userId")
         }
+        self.userId = userId
+    }
+}
+
+struct SettingsRoute: Route {
+    static let pattern = "/settings/:section?"
+    let section: String?
+    
+    var parameters: RouteParameters {
+        var params: [String: RouteParameterValue] = [:]
+        if let section { params["section"] = .string(section) }
+        return RouteParameters(params)
+    }
+    
+    init(parameters: RouteParameters) throws {
+        self.section = parameters.string(for: "section")
     }
 }
 ```
@@ -93,20 +143,30 @@ enum AppRoute: Route {
 ```swift
 @main
 struct MyApp: App {
-    @StateObject var router = Router<AppRoute>()
+    @StateObject private var router = Router(
+        configuration: RouterConfiguration(
+            deepLinkScheme: "myapp",
+            universalLinkHosts: ["example.com"]
+        )
+    )
     
     var body: some Scene {
         WindowGroup {
             RouterView(router: router) { route in
                 switch route {
-                case .home:
+                case let route as HomeRoute:
                     HomeView()
-                case .user(let id):
-                    UserView(userId: id)
-                case .settings:
-                    SettingsView()
-                case .product(let id, let color):
-                    ProductView(id: id, color: color)
+                case let route as ProfileRoute:
+                    ProfileView(userId: route.userId)
+                case let route as SettingsRoute:
+                    SettingsView(section: route.section)
+                default:
+                    NotFoundView()
+                }
+            }
+            .onOpenURL { url in
+                Task {
+                    try? await router.handleDeepLink(url)
                 }
             }
         }
@@ -118,294 +178,359 @@ struct MyApp: App {
 
 ```swift
 struct HomeView: View {
-    @EnvironmentObject var router: Router<AppRoute>
+    @Environment(\.router) private var router
     
     var body: some View {
-        VStack {
-            Button("View Profile") {
-                router.push(.user(id: "123"))
+        VStack(spacing: 20) {
+            RouterLink(to: ProfileRoute(userId: "123")) {
+                Label("View Profile", systemImage: "person")
             }
             
-            Button("Settings") {
-                router.push(.settings)
+            Button("Open Settings") {
+                Task {
+                    try? await router?.navigate(
+                        to: SettingsRoute(section: "privacy"),
+                        action: .present(style: .sheet)
+                    )
+                }
             }
         }
     }
 }
 ```
 
-## Navigation Methods
+## 🏗️ Architecture
 
-### Push
-
-```swift
-router.push(.user(id: "123"))
-```
-
-### Pop
-
-```swift
-router.pop()
-router.popToRoot()
-router.pop(to: .home)
-```
-
-### Replace
-
-```swift
-router.replace(with: .home)
-```
-
-### Present (Modal)
-
-```swift
-router.present(.settings, style: .sheet)
-router.present(.login, style: .fullScreen)
-```
-
-### Dismiss
-
-```swift
-router.dismiss()
-```
-
-## Deep Linking
-
-### URL Scheme
-
-```swift
-// myapp://user/123
-extension AppRoute {
-    init?(url: URL) {
-        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
-            return nil
-        }
+```mermaid
+graph TB
+    subgraph "SwiftRouter Architecture"
+        A[Your App] --> B[Router]
+        B --> C[Route Registry]
+        B --> D[Middleware Chain]
+        B --> E[Navigation Stack]
         
-        let pathComponents = components.path.split(separator: "/")
+        D --> D1[Auth Middleware]
+        D --> D2[Analytics Middleware]
+        D --> D3[Custom Middleware]
         
-        switch pathComponents.first {
-        case "user":
-            guard let id = pathComponents.dropFirst().first else { return nil }
-            self = .user(id: String(id))
-        case "settings":
-            self = .settings
-        default:
-            return nil
-        }
-    }
-}
-```
-
-### Universal Links
-
-```swift
-// Handle in App
-@main
-struct MyApp: App {
-    @StateObject var router = Router<AppRoute>()
+        E --> F[SwiftUI RouterView]
+        E --> G[UIKit UIKitRouter]
+        
+        H[Deep Link URL] --> I[DeepLinkHandler]
+        I --> C
+        C --> B
+        
+        J[Universal Link] --> K[UniversalLinkHandler]
+        K --> C
+    end
     
-    var body: some Scene {
-        WindowGroup {
-            RouterView(router: router) { ... }
-                .onOpenURL { url in
-                    if let route = AppRoute(url: url) {
-                        router.handle(route)
-                    }
-                }
-        }
-    }
-}
+    style B fill:#f96,stroke:#333,stroke-width:2px
+    style D fill:#9cf,stroke:#333,stroke-width:2px
+    style E fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
-### apple-app-site-association
+### Core Components
 
-```json
-{
-  "applinks": {
-    "apps": [],
-    "details": [{
-      "appID": "TEAM_ID.com.myapp",
-      "paths": ["/user/*", "/product/*", "/settings"]
-    }]
-  }
-}
-```
+| Component | Responsibility |
+|-----------|---------------|
+| **Router** | Central navigation coordinator |
+| **Route** | Type-safe destination definition |
+| **RouteRegistry** | Pattern matching and route resolution |
+| **NavigationStack** | Push/pop/present/dismiss management |
+| **DeepLinkHandler** | URL scheme resolution |
+| **UniversalLinkHandler** | AASA-based link handling |
+| **Middleware** | Cross-cutting navigation concerns |
+| **Coordinator** | Flow management (optional) |
 
-## State Restoration
+## 🔥 Advanced Usage
 
-Automatically save and restore navigation state:
+### Middleware
 
 ```swift
-let router = Router<AppRoute>(
-    persistence: .userDefaults,
-    key: "navigation_state"
+// Authentication Middleware
+let authMiddleware = AuthMiddleware(
+    provider: myAuthProvider,
+    configuration: .init(
+        loginRoute: "/login",
+        publicPatterns: ["/login", "/register", "/forgot-password"]
+    )
 )
 
-// State is automatically saved on navigation changes
-// and restored on app launch
+// Analytics Middleware
+let analyticsMiddleware = AnalyticsMiddleware(
+    tracker: FirebaseAnalyticsTracker(),
+    configuration: .init(
+        trackScreenViews: true,
+        trackTiming: true
+    )
+)
+
+// Add to router
+router.use(authMiddleware)
+router.use(analyticsMiddleware)
 ```
 
-## Tab Navigation
+### Custom Middleware
 
 ```swift
-struct MainView: View {
-    @StateObject var homeRouter = Router<HomeRoute>()
-    @StateObject var profileRouter = Router<ProfileRoute>()
+struct RateLimitMiddleware: NavigationMiddleware {
+    let name = "RateLimit"
+    let priority = 50
     
-    var body: some View {
-        TabView {
-            RouterView(router: homeRouter) { ... }
-                .tabItem { Label("Home", systemImage: "house") }
-            
-            RouterView(router: profileRouter) { ... }
-                .tabItem { Label("Profile", systemImage: "person") }
+    private let maxNavigationsPerSecond: Int
+    private var navigationTimes: [Date] = []
+    
+    func handle(context: NavigationContext) async throws {
+        let now = Date()
+        navigationTimes = navigationTimes.filter { now.timeIntervalSince($0) < 1.0 }
+        
+        guard navigationTimes.count < maxNavigationsPerSecond else {
+            throw RouterError.custom("Rate limit exceeded")
         }
+        
+        navigationTimes.append(now)
     }
 }
 ```
 
-## Middleware
-
-Add custom logic before navigation:
+### Coordinator Pattern
 
 ```swift
-router.addMiddleware { route, action in
-    // Analytics
-    Analytics.track("navigate_to_\(route.path)")
+@MainActor
+final class OnboardingCoordinator: Coordinator {
+    let id = UUID()
+    let router: Router
+    var childCoordinators: [any Coordinator] = []
+    weak var parentCoordinator: (any Coordinator)?
     
-    // Auth check
-    if route.requiresAuth && !isLoggedIn {
-        return .redirect(to: .login)
+    init(router: Router) {
+        self.router = router
     }
     
-    return .continue
+    func start() async {
+        try? await router.navigate(to: WelcomeRoute())
+    }
+    
+    func showTerms() async {
+        try? await router.navigate(to: TermsRoute())
+    }
+    
+    func completeOnboarding() async {
+        await finish()
+        // Notify parent to show main app
+    }
 }
 ```
 
-## Async Navigation
+### Tab Navigation
 
 ```swift
-Button("Load & Navigate") {
-    Task {
-        let user = try await api.fetchUser(id: "123")
-        await router.push(.user(id: user.id))
+let tabRouter = TabRouter(
+    tabs: [
+        TabItem(id: "home", title: "Home", systemImage: "house", routeIdentifier: "/home", order: 0),
+        TabItem(id: "search", title: "Search", systemImage: "magnifyingglass", routeIdentifier: "/search", order: 1),
+        TabItem(id: "profile", title: "Profile", systemImage: "person", routeIdentifier: "/profile", order: 2)
+    ],
+    configuration: .init(
+        doubleTapResetsNavigation: true,
+        trackHistory: true
+    )
+)
+
+// Navigate
+try tabRouter.selectTab("search")
+
+// Update badge
+tabRouter.updateBadge(.count(5), for: "home")
+```
+
+### Split View (iPad)
+
+```swift
+let splitRouter = SplitViewRouter(
+    configuration: .init(
+        layout: .tripleColumn,
+        autoSelectFirstSidebarItem: true
+    )
+)
+
+splitRouter.registerSidebarItems(["inbox", "sent", "drafts"])
+splitRouter.registerContentItems(["msg1", "msg2"], for: "inbox")
+
+splitRouter.selectSidebarItem("inbox")
+splitRouter.navigateToDetail("/message/123")
+```
+
+### Deep Linking
+
+```swift
+// URL Scheme: myapp://profile/123
+// Universal Link: https://example.com/profile/123
+
+// Both automatically resolve to ProfileRoute(userId: "123")
+
+// Custom URL building
+let url = router.deepLinkHandler.buildURL(
+    for: ProfileRoute(userId: "456"),
+    queryItems: [URLQueryItem(name: "ref", value: "share")]
+)
+// myapp://profile/456?ref=share
+```
+
+### State Persistence
+
+```swift
+let router = Router(
+    configuration: RouterConfiguration(
+        // State automatically saved to UserDefaults
+    )
+)
+
+// Manual save/restore
+router.navigationStack.save(to: userDefaults, key: "nav_state")
+router.navigationStack.restore(from: userDefaults, key: "nav_state")
+```
+
+## 🔄 Migration
+
+### From Coordinator-based Navigation
+
+```swift
+// Before
+class ProfileCoordinator {
+    func showProfile(userId: String) {
+        let vc = ProfileViewController(userId: userId)
+        navigationController.pushViewController(vc, animated: true)
     }
+}
+
+// After
+try await router.navigate(to: ProfileRoute(userId: userId))
+```
+
+### From NavigationLink
+
+```swift
+// Before
+NavigationLink(destination: ProfileView(userId: id)) {
+    Text("Profile")
+}
+
+// After
+RouterLink(to: ProfileRoute(userId: id)) {
+    Text("Profile")
 }
 ```
 
-## Testing
+### From Manual Deep Link Handling
+
+```swift
+// Before
+func application(_ app: UIApplication, open url: URL) -> Bool {
+    guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+        return false
+    }
+    // 50+ lines of manual parsing...
+}
+
+// After
+func application(_ app: UIApplication, open url: URL) -> Bool {
+    Task { try? await router.handleDeepLink(url) }
+    return true
+}
+```
+
+## 🆚 Comparison
+
+| Feature | SwiftRouter | URLNavigator | Coordinator | Raw NavigationStack |
+|---------|-------------|--------------|-------------|---------------------|
+| Type-Safe Routes | ✅ | ❌ | ⚠️ | ⚠️ |
+| Deep Linking | ✅ | ✅ | ❌ | ❌ |
+| Universal Links | ✅ | ❌ | ❌ | ❌ |
+| Middleware | ✅ | ❌ | ❌ | ❌ |
+| State Persistence | ✅ | ❌ | ❌ | ❌ |
+| Async/Await | ✅ | ❌ | ⚠️ | ❌ |
+| SwiftUI Native | ✅ | ⚠️ | ⚠️ | ✅ |
+| UIKit Support | ✅ | ✅ | ✅ | ❌ |
+| Tab Navigation | ✅ | ❌ | ⚠️ | ❌ |
+| Split View | ✅ | ❌ | ❌ | ✅ |
+| Testable | ✅ | ⚠️ | ✅ | ❌ |
+
+## 🧪 Testing
 
 ```swift
 class NavigationTests: XCTestCase {
-    func testUserNavigation() {
-        let router = Router<AppRoute>()
-        
-        router.push(.user(id: "123"))
-        
-        XCTAssertEqual(router.currentRoute, .user(id: "123"))
-        XCTAssertEqual(router.stack.count, 2)
+    var router: Router!
+    
+    override func setUp() {
+        router = Router()
+        router.register(ProfileRoute.self)
+        router.register(SettingsRoute.self)
     }
     
-    func testDeepLink() {
-        let router = Router<AppRoute>()
-        let url = URL(string: "myapp://user/456")!
+    func testPushNavigation() async throws {
+        try await router.navigate(to: ProfileRoute(userId: "123"))
         
-        router.handle(url: url)
+        XCTAssertEqual(router.navigationStack.depth, 1)
+        XCTAssertTrue(router.navigationStack.topRoute is ProfileRoute)
+    }
+    
+    func testDeepLink() async throws {
+        let url = URL(string: "myapp://profile/456")!
+        try await router.handleDeepLink(url)
         
-        XCTAssertEqual(router.currentRoute, .user(id: "456"))
+        let route = router.navigationStack.topRoute as? ProfileRoute
+        XCTAssertEqual(route?.userId, "456")
+    }
+    
+    func testMiddleware() async throws {
+        var middlewareCalled = false
+        
+        router.use(ClosureMiddleware(name: "Test") { _ in
+            middlewareCalled = true
+        })
+        
+        try await router.navigate(to: ProfileRoute(userId: "123"))
+        
+        XCTAssertTrue(middlewareCalled)
     }
 }
 ```
 
-## Best Practices
+## 📚 Documentation
 
-### Route Organization
+Full DocC documentation available:
 
-```swift
-// ✅ Good: Grouped by feature
-enum AppRoute: Route {
-    case home
-    case auth(AuthRoute)
-    case profile(ProfileRoute)
-    case settings(SettingsRoute)
-}
+```bash
+# Generate documentation
+swift package generate-documentation
 
-enum AuthRoute: Route {
-    case login
-    case register
-    case forgotPassword
-}
+# Preview documentation
+swift package --disable-sandbox preview-documentation
 ```
 
-### Type-Safe Parameters
+### Guides
+- [Getting Started](Documentation/GettingStarted.md)
+- [Route Definition](Documentation/Routes.md)
+- [Deep Linking](Documentation/DeepLinking.md)
+- [Middleware](Documentation/Middleware.md)
+- [Coordinator Pattern](Documentation/Coordinators.md)
+- [Testing](Documentation/Testing.md)
 
-```swift
-// ✅ Good: Strong types
-case user(id: User.ID)
-case product(id: Product.ID, variant: Product.Variant)
+## 🤝 Contributing
 
-// ❌ Avoid: Raw strings
-case user(id: String)
-```
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
 
-## API Reference
+## 📄 License
 
-### Router
-
-```swift
-class Router<R: Route>: ObservableObject {
-    var currentRoute: R
-    var stack: [R]
-    
-    func push(_ route: R)
-    func pop()
-    func popToRoot()
-    func replace(with route: R)
-    func present(_ route: R, style: PresentationStyle)
-    func dismiss()
-    func handle(url: URL)
-}
-```
-
-### Route Protocol
-
-```swift
-protocol Route: Hashable, Codable {
-    var path: String { get }
-    init?(url: URL)
-}
-```
-
-## Examples
-
-See [Examples](Examples/):
-- **BasicNavigation** - Simple push/pop
-- **DeepLinking** - URL handling
-- **TabBar** - Multi-router tabs
-- **Authentication** - Protected routes
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## License
-
-MIT License
+SwiftRouter is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
 
 ---
 
 <p align="center">
-  <sub>Navigate with confidence 🧭</sub>
+  <sub>Built with ❤️ for the iOS community</sub>
 </p>
 
----
-
-## 📈 Star History
-
-<a href="https://star-history.com/#muhittincamdali/SwiftRouter&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=muhittincamdali/SwiftRouter&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=muhittincamdali/SwiftRouter&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=muhittincamdali/SwiftRouter&type=Date" />
- </picture>
-</a>
+<p align="center">
+  <a href="https://github.com/muhittincamdali/SwiftRouter/stargazers">⭐ Star us on GitHub</a>
+</p>

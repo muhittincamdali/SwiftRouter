@@ -1,4 +1,4 @@
-// DeepLinkHandler.swift
+// CoreDeepLinkHandler.swift
 // SwiftRouter
 //
 // Created by Muhittin Camdali
@@ -165,8 +165,8 @@ public final class DeepLinkHandler: Sendable {
     /// Determines the type of deep link for the given URL.
     ///
     /// - Parameter url: The URL to classify.
-    /// - Returns: The ``DeepLinkType`` classification.
-    public func linkType(for url: URL) -> DeepLinkType {
+    /// - Returns: The ``CoreDeepLinkType`` classification.
+    public func linkType(for url: URL) -> CoreDeepLinkType {
         if url.scheme?.lowercased() == scheme.lowercased() {
             return .customScheme
         }
@@ -301,7 +301,7 @@ public final class DeepLinkHandler: Sendable {
         components.scheme = scheme
         components.host = ""
 
-        var path = route.pattern
+        var path = type(of: route).pattern
         for (key, value) in route.parameters.values {
             path = path.replacingOccurrences(of: ":\(key)", with: value.stringValue)
         }
@@ -332,7 +332,7 @@ public final class DeepLinkHandler: Sendable {
         components.scheme = "https"
         components.host = linkHost
 
-        var path = route.pattern
+        var path = type(of: route).pattern
         for (key, value) in route.parameters.values {
             path = path.replacingOccurrences(of: ":\(key)", with: value.stringValue)
         }
@@ -376,10 +376,10 @@ public final class DeepLinkHandler: Sendable {
     }
 }
 
-// MARK: - Deep Link Type
+// MARK: - Core Deep Link Type
 
 /// The classification of a deep link URL.
-public enum DeepLinkType: String, Sendable {
+public enum CoreDeepLinkType: String, Sendable {
 
     /// A custom URL scheme link (e.g., `myapp://`).
     case customScheme

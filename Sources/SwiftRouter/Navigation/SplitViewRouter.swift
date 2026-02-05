@@ -754,8 +754,8 @@ private struct SizeClassTracker: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .onChange(of: horizontalSizeClass) { _, newValue in
-                if let sizeClass = newValue {
+            .task(id: horizontalSizeClass) {
+                if let sizeClass = horizontalSizeClass {
                     router.updateSizeClass(sizeClass)
                 }
             }
