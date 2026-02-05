@@ -56,8 +56,9 @@ struct OnDeepLinkModifier: ViewModifier {
     }
 }
 
-// MARK: - Router Navigation Bar Modifier
+// MARK: - Router Navigation Bar Modifier (iOS/tvOS only)
 
+#if os(iOS) || os(tvOS)
 /// A view modifier that configures navigation bar appearance based on route.
 struct RouterNavigationBarModifier: ViewModifier {
 
@@ -72,6 +73,7 @@ struct RouterNavigationBarModifier: ViewModifier {
             .navigationBarBackButtonHidden(!showsBackButton)
     }
 }
+#endif
 
 // MARK: - Router Sheet Modifier
 
@@ -143,6 +145,7 @@ public extension View {
         modifier(OnDeepLinkModifier(handler: handler))
     }
 
+    #if os(iOS) || os(tvOS)
     /// Configures the navigation bar for a routed view.
     ///
     /// - Parameters:
@@ -161,6 +164,7 @@ public extension View {
             showsBackButton: showsBackButton
         ))
     }
+    #endif
 
     /// Shows a loading indicator when the router is navigating.
     ///

@@ -43,6 +43,12 @@ public struct RouterView<Content: View>: View {
     /// The navigation title for the root view.
     private let rootTitle: String?
 
+    /// State for sheet presentation
+    @State private var sheetRoute: RouteWrapper?
+    
+    /// State for full screen presentation
+    @State private var fullScreenRoute: RouteWrapper?
+
     /// Creates a router view.
     ///
     /// - Parameters:
@@ -63,7 +69,7 @@ public struct RouterView<Content: View>: View {
     }
 
     public var body: some View {
-        NavigationStack(path: navigationPath) {
+        SwiftUI.NavigationStack(path: $navigationPath) {
             rootContent
                 .navigationDestination(for: RouteWrapper.self) { wrapper in
                     routeViewBuilder(wrapper.route)
@@ -72,9 +78,15 @@ public struct RouterView<Content: View>: View {
         .sheet(item: $sheetRoute) { wrapper in
             routeViewBuilder(wrapper.route)
         }
+        #if os(iOS) || os(tvOS) || os(visionOS)
         .fullScreenCover(item: $fullScreenRoute) { wrapper in
             routeViewBuilder(wrapper.route)
         }
+        #endif
+        .onReceive(router.navigationStack.$modalEntries) { _ in
+            updateModalState()
+        }
+        .environment(\.router, router)
     }
 
     // MARK: - Private
@@ -83,62 +95,38 @@ public struct RouterView<Content: View>: View {
     private var rootContent: some View {
         if let rootRoute = router.navigationStack.rootEntry?.route {
             routeViewBuilder(rootRoute)
-                .if(rootTitle != nil) { view in
+                .applyIf(rootTitle != nil) { view in
                     view.navigationTitle(rootTitle!)
                 }
-                .if(!showsNavigationBar) { view in
-                    view.navigationBarHidden(true)
+                #if os(iOS) || os(tvOS)
+                .applyIf(!showsNavigationBar) { view in
+                    view.toolbar(.hidden, for: .navigationBar)
                 }
+                #endif
         } else {
             Color.clear
         }
     }
 
-    private var navigationPath: Binding<NavigationPath> {
-        Binding(
-            get: {
-                var path = NavigationPath()
-                for entry in router.navigationStack.entries.dropFirst() {
-                    path.append(RouteWrapper(route: entry.route))
-                }
-                return path
-            },
-            set: { _ in }
-        )
-    }
-
-    private var sheetRoute: Binding<RouteWrapper?> {
-        Binding(
-            get: {
-                guard let modal = router.navigationStack.modalEntries.last,
-                      modal.transitionStyle == .sheet else {
-                    return nil
-                }
-                return RouteWrapper(route: modal.route)
-            },
-            set: { newValue in
-                if newValue == nil {
-                    router.dismiss()
-                }
+    @State private var navigationPath = NavigationPath()
+    
+    private func updateModalState() {
+        if let modal = router.navigationStack.modalEntries.last {
+            switch modal.transitionStyle {
+            case .sheet:
+                sheetRoute = RouteWrapper(route: modal.route)
+                fullScreenRoute = nil
+            case .fullScreenCover:
+                fullScreenRoute = RouteWrapper(route: modal.route)
+                sheetRoute = nil
+            default:
+                sheetRoute = nil
+                fullScreenRoute = nil
             }
-        )
-    }
-
-    private var fullScreenRoute: Binding<RouteWrapper?> {
-        Binding(
-            get: {
-                guard let modal = router.navigationStack.modalEntries.last,
-                      modal.transitionStyle == .fullScreenCover else {
-                    return nil
-                }
-                return RouteWrapper(route: modal.route)
-            },
-            set: { newValue in
-                if newValue == nil {
-                    router.dismiss()
-                }
-            }
-        )
+        } else {
+            sheetRoute = nil
+            fullScreenRoute = nil
+        }
     }
 }
 
@@ -165,7 +153,7 @@ private extension View {
 
     /// Applies a transformation if the condition is true.
     @ViewBuilder
-    func `if`<Transform: View>(
+    func applyIf<Transform: View>(
         _ condition: Bool,
         transform: (Self) -> Transform
     ) -> some View {
