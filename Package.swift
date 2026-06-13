@@ -1,5 +1,4 @@
 // swift-tools-version: 5.9
-
 import PackageDescription
 
 let package = Package(
@@ -8,13 +7,11 @@ let package = Package(
         .iOS(.v15),
         .macOS(.v13),
         .tvOS(.v15),
-        .watchOS(.v8)
+        .watchOS(.v8),
+        .visionOS(.v1)
     ],
     products: [
-        .library(
-            name: "SwiftRouter",
-            targets: ["SwiftRouter"]
-        )
+        .library(name: "SwiftRouter", targets: ["SwiftRouter"]),
     ],
     targets: [
         .target(
@@ -26,9 +23,7 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftRouterTests",
-            dependencies: ["SwiftRouter"],
-            path: "Tests/SwiftRouterTests"
+            dependencies: ["SwiftRouter"]
         )
-    ],
-    swiftLanguageVersions: [.v5]
+    ]
 )
