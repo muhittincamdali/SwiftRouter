@@ -11,9 +11,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Version 2.0.0 is a new router with a new API. In June 2026 the 1.0.0 sources were replaced with
 placeholder code; this release replaces that code and takes over the presentation, tab and
-state-saving features of SwiftUI-Navigation-Pro, which is being archived. The
+state-saving features of SwiftUI-Navigation-Pro, which is being archived. Its flow coordinator,
+navigation history, UIKit bridge, side menu, transitions, A/B testing, analytics, recording and
+crash recovery are not carried over. The
 [migration guide](https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/migratingfromversion1)
-maps the 1.0.0 API to the new one.
+maps the 1.0.0 API and the SwiftUI-Navigation-Pro types to the new API and says what to use
+instead of each part that is not carried over.
 
 ### Added
 
