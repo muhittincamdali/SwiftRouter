@@ -10,7 +10,8 @@ public enum DeepLinkRejection: Error, Hashable, Sendable {
     case tooManyQueryItems(limit: Int)
     /// The scheme is neither `https` with an allowed host nor one of the custom schemes.
     case unsupportedScheme
-    /// An `https` URL whose host is not in the allowed hosts.
+    /// An `https` URL whose host is not in the allowed hosts, is not a plain DNS name or has a
+    /// port other than 443.
     case hostNotAllowed
     /// The URL contains a user name or password.
     case credentialsNotAllowed
@@ -81,7 +82,8 @@ public struct DeepLinks<R: Route>: Sendable {
     /// The custom schemes accepted, lowercased, such as `shop` for `shop://…`.
     public let schemes: Set<String>
     /// The hosts accepted for `https` links, lowercased. `*.example.com` accepts every subdomain
-    /// of `example.com`, but not `example.com` itself.
+    /// of `example.com`, but not `example.com` itself. Hosts are compared in their ASCII form, so
+    /// list an internationalized name as `xn--…`.
     public let hosts: Set<String>
     /// How literal segments are compared.
     public let literalMatching: URLPattern.LiteralMatching
@@ -98,7 +100,7 @@ public struct DeepLinks<R: Route>: Sendable {
         limits: DeepLinkLimits = .default
     ) {
         self.schemes = Set(schemes.map { $0.lowercased() })
-        self.hosts = Set(hosts.map { Self.normalizedHost($0) })
+        self.hosts = Set(hosts.map { HostName.normalized($0) })
         self.literalMatching = literalMatching
         self.limits = limits
     }
@@ -140,7 +142,8 @@ public struct DeepLinks<R: Route>: Sendable {
         let scheme = components.scheme?.lowercased() ?? ""
         var leading: [Substring] = []
         if scheme == "https" {
-            guard let host = components.percentEncodedHost, isAllowed(host: host) else { return .rejected(.hostNotAllowed) }
+            guard let host = components.encodedHost, isAllowed(host: host) else { return .rejected(.hostNotAllowed) }
+            guard components.port == nil || components.port == HostName.httpsPort else { return .rejected(.hostNotAllowed) }
         } else if schemes.contains(scheme) {
             if let host = components.percentEncodedHost, !host.isEmpty { leading = [Substring(host)] }
         } else {
@@ -203,10 +206,11 @@ public struct DeepLinks<R: Route>: Sendable {
 
     // MARK: Hosts
 
+    /// `rawHost` is the IDNA (ASCII) form. It is never percent-decoded: a decoded `/`, `@` or `.`
+    /// would move the label boundary that the `*.` suffix check relies on.
     private func isAllowed(host rawHost: String) -> Bool {
-        guard let decoded = rawHost.removingPercentEncoding, !PathText.containsControlCharacter(decoded) else { return false }
-        let host = Self.normalizedHost(decoded)
-        guard !host.isEmpty else { return false }
+        let host = HostName.normalized(rawHost)
+        guard HostName.isDNSName(host) else { return false }
         if hosts.contains(host) { return true }
         return hosts.contains { allowed in
             guard allowed.hasPrefix("*.") else { return false }
@@ -214,11 +218,36 @@ public struct DeepLinks<R: Route>: Sendable {
             return host.hasSuffix(parent) && host.count > parent.count
         }
     }
+}
 
-    private static func normalizedHost(_ host: String) -> String {
+/// Host name rules for `https` deep links.
+enum HostName {
+    static let httpsPort = 443
+    private static let maxLength = 253
+    private static let maxLabelLength = 63
+    private static let hyphen = UInt8(ascii: "-")
+
+    /// Lowercased, without the trailing dot of a fully qualified name.
+    static func normalized(_ host: String) -> String {
         var host = host.lowercased()
         if host.hasSuffix(".") { host.removeLast() }
         return host
+    }
+
+    /// Letters, digits and `-` in labels of 1 to 63 bytes that neither start nor end with `-`.
+    static func isDNSName(_ host: String) -> Bool {
+        guard !host.isEmpty, host.utf8.count <= maxLength else { return false }
+        return host.split(separator: ".", omittingEmptySubsequences: false).allSatisfy { label in
+            let bytes = label.utf8
+            guard let first = bytes.first, let last = bytes.last, bytes.count <= maxLabelLength else { return false }
+            return first != hyphen && last != hyphen && bytes.allSatisfy(isNameByte)
+        }
+    }
+
+    private static func isNameByte(_ byte: UInt8) -> Bool {
+        (UInt8(ascii: "a")...UInt8(ascii: "z")).contains(byte)
+            || (UInt8(ascii: "0")...UInt8(ascii: "9")).contains(byte)
+            || byte == hyphen
     }
 }
 

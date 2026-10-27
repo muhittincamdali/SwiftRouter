@@ -79,7 +79,7 @@ and returns ``DeepLinkResolution/rejected(_:)`` with the reason:
 | Input                                                                                 | Rejection                                                                                                                          |
 | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | More than 2,048 bytes, 32 segments or 32 query items (``DeepLinkLimits``)               | ``DeepLinkRejection/urlTooLong(limit:)``, ``DeepLinkRejection/tooManySegments(limit:)``, ``DeepLinkRejection/tooManyQueryItems(limit:)`` |
-| `http`, unknown schemes, `https` on a host you did not list                           | ``DeepLinkRejection/unsupportedScheme``, ``DeepLinkRejection/hostNotAllowed``                                                          |
+| `http`, unknown schemes, `https` on a host you did not list or on a port other than 443 | ``DeepLinkRejection/unsupportedScheme``, ``DeepLinkRejection/hostNotAllowed``                                                          |
 | A user name or password in the URL                                                    | ``DeepLinkRejection/credentialsNotAllowed``                                                                                          |
 | A `.` or `..` segment, written plainly or as `%2e`                                    | ``DeepLinkRejection/dotSegment``                                                                                                     |
 | Percent-encoded bytes that are not UTF-8                                              | ``DeepLinkRejection/invalidPercentEncoding``                                                                                         |
@@ -88,7 +88,10 @@ and returns ``DeepLinkResolution/rejected(_:)`` with the reason:
 The length is checked first, so a very long URL is refused before it is split. Segments are
 percent-decoded one at a time after the path is split at `/`, so `%2F` stays inside one segment
 and cannot add a segment that a pattern or a guard did not expect. `*.example.com` in the hosts
-accepts `m.example.com` but neither `example.com` nor `badexample.com`.
+accepts `m.example.com` but neither `example.com` nor `badexample.com`. Hosts are compared in
+their ASCII form (`bücher.example.com` arrives as `xn--bcher-kva.example.com`) and are never
+percent-decoded: a host with `%`, `_` or an empty label, such as `evil.com%2F.example.com`, is
+refused.
 
 Foundation's URL parser rewrites a `%` that is not followed by two hex digits as `%25`, so such a
 value arrives literally, for example `%zz`.
