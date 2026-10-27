@@ -5,12 +5,12 @@ import SwiftUI
 struct RouterDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            DemoRootView()
         }
     }
 }
 
-struct ContentView: View {
+struct DemoRootView: View {
     @State private var model = AppModel()
 
     var body: some View {
@@ -31,6 +31,13 @@ struct ContentView: View {
         }
         .environment(model.session)
         .onOpenURL { url in model.open(url) }
+        .task {
+            // `-open <link>` at launch opens a link through the same handler as onOpenURL.
+            // scripts/capture-screens.sh uses it, because `simctl openurl` asks for confirmation.
+            if let link = UserDefaults.standard.string(forKey: "open"), let url = URL(string: link) {
+                model.open(url)
+            }
+        }
         .tint(.blue)
     }
 }
