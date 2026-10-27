@@ -46,6 +46,14 @@ struct DeepLinkHostTests {
         ("https://shop.example.com.evil.com/products/1", .hostNotAllowed),
         ("https://example.org/catalog", .hostNotAllowed),
         ("https://badexample.org/catalog", .hostNotAllowed),
+        ("https://evil.com%2F.example.org/catalog", .hostNotAllowed),
+        ("https://evil.com%40m.example.org/catalog", .hostNotAllowed),
+        ("https://m%2Eexample.org/catalog", .hostNotAllowed),
+        ("https://a_b.example.org/catalog", .hostNotAllowed),
+        ("https://-m.example.org/catalog", .hostNotAllowed),
+        ("https://m..example.org/catalog", .hostNotAllowed),
+        ("https://shop.example.com:8443/catalog", .hostNotAllowed),
+        ("https://shop.example.com:80/catalog", .hostNotAllowed),
         ("http://shop.example.com/catalog", .unsupportedScheme),
         ("ftp://shop.example.com/catalog", .unsupportedScheme),
         ("javascript:alert(1)", .unsupportedScheme),
@@ -59,6 +67,12 @@ struct DeepLinkHostTests {
     @Test func wildcardHostAcceptsSubdomainsOnly() throws {
         #expect(entries(shopLinks().resolve(try url("https://m.example.org/catalog"))) == [.push(.catalog)])
         #expect(entries(shopLinks().resolve(try url("https://a.b.example.org/catalog"))) == [.push(.catalog)])
+    }
+
+    @Test func theDefaultPortAndInternationalNamesAreAccepted() throws {
+        #expect(entries(shopLinks().resolve(try url("https://shop.example.com:443/catalog"))) == [.push(.catalog)])
+        #expect(entries(shopLinks().resolve(try url("https://bücher.example.org/catalog"))) == [.push(.catalog)])
+        #expect(entries(shopLinks().resolve(try url("https://xn--bcher-kva.example.org/catalog"))) == [.push(.catalog)])
     }
 
     @Test func emptyConfigurationAcceptsNoURL() throws {

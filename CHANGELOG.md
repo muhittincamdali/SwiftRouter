@@ -59,8 +59,9 @@ maps the 1.0.0 API to the new one.
 ### Security
 
 - Deep links are checked before any pattern runs: URL length, segment and query item limits,
-  `https` only on listed hosts, no user names or passwords, no `.` or `..` segments (also
-  percent-encoded), no control or bidirectional formatting characters and no invalid UTF-8.
+  `https` only on listed hosts written as plain DNS names (never percent-decoded) on port 443, no
+  user names or passwords, no `.` or `..` segments (also percent-encoded), no control or
+  bidirectional formatting characters and no invalid UTF-8.
   Typed values are `nil` for out-of-range integers, `nan` and `inf` instead of trapping.
 - The June 2026 `UniversalLinkParser` printed every incoming URL to the console, which wrote
   tokens carried by links into the device log. It is removed.
