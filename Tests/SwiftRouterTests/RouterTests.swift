@@ -1,160 +1,130 @@
-//
-//  RouterTests.swift
-//  SwiftRouterTests
-//
-//  Created by Muhittin Camdali on 2025.
-//
-
-import XCTest
+import Testing
 @testable import SwiftRouter
 
-final class RouterTests: XCTestCase {
-    
-    // MARK: - Properties
-    
-    var router: Router!
-    
-    // MARK: - Setup & Teardown
-    
-    override func setUp() {
-        super.setUp()
-        router = Router()
+@MainActor
+@Suite("Router stack and presentation")
+struct RouterTests {
+    @Test func pushAndPopKeepOrder() {
+        let router = Router<TestRoute>()
+        router.push(.catalog)
+        router.navigate(to: .product(1))
+        #expect(router.path == [.catalog, .product(1)])
+        #expect(router.top == .product(1))
+        #expect(router.pop() == 1)
+        #expect(router.path == [.catalog])
     }
-    
-    override func tearDown() {
-        router = nil
-        super.tearDown()
-    }
-    
-    // MARK: - Basic Navigation Tests
-    
-    func testRouterInitialization() {
-        XCTAssertNotNil(router)
-        XCTAssertTrue(router.navigationStack.isEmpty)
-    }
-    
-    func testPushRoute() async throws {
-        let testRoute = TestRoute(id: "test-1", pattern: "/test")
-        
-        try await router.push(testRoute)
-        
-        XCTAssertEqual(router.navigationStack.count, 1)
-    }
-    
-    func testPopRoute() async throws {
-        let route1 = TestRoute(id: "test-1", pattern: "/test1")
-        let route2 = TestRoute(id: "test-2", pattern: "/test2")
-        
-        try await router.push(route1)
-        try await router.push(route2)
-        
-        XCTAssertEqual(router.navigationStack.count, 2)
-        
-        await router.pop()
-        
-        XCTAssertEqual(router.navigationStack.count, 1)
-    }
-    
-    func testPopToRoot() async throws {
-        let route1 = TestRoute(id: "test-1", pattern: "/test1")
-        let route2 = TestRoute(id: "test-2", pattern: "/test2")
-        let route3 = TestRoute(id: "test-3", pattern: "/test3")
-        
-        try await router.push(route1)
-        try await router.push(route2)
-        try await router.push(route3)
-        
-        XCTAssertEqual(router.navigationStack.count, 3)
-        
-        await router.popToRoot()
-        
-        XCTAssertTrue(router.navigationStack.isEmpty)
-    }
-    
-    // MARK: - Route Registration Tests
-    
-    func testRegisterRoute() {
-        let pattern = "/users/:userId"
-        
-        router.register(pattern: pattern) { params in
-            TestRoute(id: "user", pattern: pattern)
-        }
-        
-        XCTAssertTrue(router.isPatternRegistered(pattern))
-    }
-    
-    func testNavigateToRegisteredRoute() async throws {
-        let pattern = "/products/:productId"
-        
-        router.register(pattern: pattern) { params in
-            TestRoute(id: params["productId"] ?? "unknown", pattern: pattern)
-        }
-        
-        try await router.navigate(to: "/products/123")
-        
-        XCTAssertEqual(router.navigationStack.count, 1)
-    }
-    
-    func testNavigateToUnregisteredRoute() async {
-        do {
-            try await router.navigate(to: "/unknown/path")
-            XCTFail("Should throw error for unregistered route")
-        } catch {
-            XCTAssertTrue(error is RouterError)
-        }
-    }
-    
-    // MARK: - Navigation Stack Tests
-    
-    func testNavigationStackOrder() async throws {
-        let routes = [
-            TestRoute(id: "1", pattern: "/1"),
-            TestRoute(id: "2", pattern: "/2"),
-            TestRoute(id: "3", pattern: "/3")
-        ]
-        
-        for route in routes {
-            try await router.push(route)
-        }
-        
-        XCTAssertEqual(router.navigationStack.count, 3)
-    }
-    
-    func testCanGoBack() async throws {
-        XCTAssertFalse(router.canGoBack)
-        
-        try await router.push(TestRoute(id: "1", pattern: "/1"))
-        
-        XCTAssertFalse(router.canGoBack)
-        
-        try await router.push(TestRoute(id: "2", pattern: "/2"))
-        
-        XCTAssertTrue(router.canGoBack)
-    }
-    
-    // MARK: - Replace Tests
-    
-    func testReplaceRoute() async throws {
-        let route1 = TestRoute(id: "1", pattern: "/1")
-        let route2 = TestRoute(id: "2", pattern: "/2")
-        
-        try await router.push(route1)
-        XCTAssertEqual(router.navigationStack.count, 1)
-        
-        try await router.replace(with: route2)
-        XCTAssertEqual(router.navigationStack.count, 1)
-    }
-}
 
-// MARK: - Test Route
+    @Test func popNeverRemovesMoreThanThePushedScreensOfTheTopLevel() {
+        let router = Router<TestRoute>(entries: [.push(.catalog), .sheet(.settings), .push(.account)])
+        #expect(router.pop(5) == 1)
+        #expect(router.entries == [.push(.catalog), .sheet(.settings)])
+        #expect(router.canPop == false)
+        #expect(router.pop() == 0)
+    }
 
-struct TestRoute: Route {
-    let id: String
-    static var pattern: String = "/test"
-    var routePattern: String
-    
-    init(id: String, pattern: String) {
-        self.id = id
-        self.routePattern = pattern
+    @Test func popToRootStaysInsideTheSheet() {
+        let router = Router<TestRoute>(entries: [.push(.catalog), .sheet(.settings), .push(.account), .push(.orders)])
+        router.popToRoot()
+        #expect(router.entries == [.push(.catalog), .sheet(.settings)])
+    }
+
+    @Test func popToFindsTheLastOccurrenceAcrossSheets() {
+        let router = Router<TestRoute>(entries: [.push(.catalog), .push(.product(1)), .sheet(.catalog), .push(.product(2))])
+        #expect(router.popTo(.catalog))
+        #expect(router.entries == [.push(.catalog), .push(.product(1)), .sheet(.catalog)])
+        #expect(router.popTo { if case .product = $0 { true } else { false } })
+        #expect(router.entries == [.push(.catalog), .push(.product(1))])
+    }
+
+    @Test func popToAMissingRouteChangesNothing() {
+        let router = Router<TestRoute>(entries: [.push(.catalog)])
+        #expect(router.popTo(.settings) == false)
+        #expect(router.path == [.catalog])
+    }
+
+    @Test func dismissRemovesTheTopModalLevelWithItsPushes() {
+        let router = Router<TestRoute>()
+        router.push(.catalog)
+        router.present(.settings)
+        router.push(.account)
+        router.present(.signIn, style: .fullScreenCover)
+        #expect(router.isPresenting)
+        #expect(router.dismiss())
+        #expect(router.entries == [.push(.catalog), .sheet(.settings), .push(.account)])
+        #expect(router.dismiss())
+        #expect(router.entries == [.push(.catalog)])
+        #expect(router.dismiss() == false)
+    }
+
+    @Test func dismissAllKeepsTheRootStack() {
+        let router = Router<TestRoute>(entries: [.push(.catalog), .sheet(.settings), .fullScreenCover(.signIn)])
+        router.dismissAll()
+        #expect(router.entries == [.push(.catalog)])
+        router.reset()
+        #expect(router.entries.isEmpty)
+    }
+
+    @Test func settingThePathReplacesTheStateWithPushes() {
+        let router = Router<TestRoute>(entries: [.sheet(.settings)])
+        router.path = [.catalog, .product(3)]
+        #expect(router.entries == [.push(.catalog), .push(.product(3))])
+    }
+
+    @Test func requestsLongerThanMaxDepthAreRejectedWithoutChange() {
+        let router = Router<TestRoute>(maxDepth: 2)
+        #expect(router.push(contentsOf: [.catalog, .product(1)]) == .applied)
+        #expect(router.push(.product(2)) == .rejected(.depthLimitExceeded(limit: 2)))
+        #expect(router.present(.settings) == .rejected(.depthLimitExceeded(limit: 2)))
+        #expect(router.path == [.catalog, .product(1)])
+    }
+
+    @Test func levelsSplitAtEveryModalEntry() {
+        let router = Router<TestRoute>(entries: [
+            .push(.catalog), .push(.product(1)), .sheet(.settings), .push(.account), .fullScreenCover(.signIn)
+        ])
+        #expect(router.modalStarts == [2, 4])
+        #expect(router.pushes(atLevel: 0) == [.catalog, .product(1)])
+        #expect(router.pushes(atLevel: 1) == [.account])
+        #expect(router.pushes(atLevel: 2) == [])
+        #expect(router.pushes(atLevel: 3) == [])
+        #expect(router.modalEntry(atLevel: 1) == .sheet(.settings))
+        #expect(router.modalEntry(atLevel: 2) == .fullScreenCover(.signIn))
+        #expect(router.modalEntry(atLevel: 3) == nil)
+        #expect(router.modalEntry(atLevel: 0) == nil)
+    }
+
+    @Test func theSystemBackButtonOnALowerLevelDismissesTheLevelsAbove() {
+        let router = Router<TestRoute>(entries: [.push(.catalog), .push(.product(1)), .sheet(.settings)])
+        router.setPushes([.catalog], atLevel: 0)
+        #expect(router.entries == [.push(.catalog)])
+    }
+
+    @Test func aNavigationLinkInsideASheetAppendsToThatSheet() {
+        let router = Router<TestRoute>(entries: [.push(.catalog), .sheet(.settings)])
+        router.setPushes([.account], atLevel: 1)
+        #expect(router.entries == [.push(.catalog), .sheet(.settings), .push(.account)])
+    }
+
+    @Test func swipingASheetDownDismissesOnlyThatLevel() {
+        let router = Router<TestRoute>(entries: [.sheet(.settings), .push(.account), .sheet(.signIn)])
+        router.dismissLevel(2)
+        #expect(router.entries == [.sheet(.settings), .push(.account)])
+        router.dismissLevel(5)
+        #expect(router.entries == [.sheet(.settings), .push(.account)])
+        router.dismissLevel(1)
+        #expect(router.entries.isEmpty)
+    }
+
+    @Test func writesForALevelThatIsNotShownAreIgnored() {
+        let router = Router<TestRoute>(entries: [.push(.catalog)])
+        router.setPushes([.settings], atLevel: 3)
+        #expect(router.entries == [.push(.catalog)])
+    }
+
+    @Test func entryHelpersSetTheStyle() {
+        #expect(RouteEntry<TestRoute>.push(.catalog).style == .push)
+        #expect(RouteEntry<TestRoute>.sheet(.catalog).style == .sheet)
+        #expect(RouteEntry<TestRoute>.fullScreenCover(.catalog).style == .fullScreenCover)
+        #expect(PresentationStyle.allCases.filter(\.isModal) == [.sheet, .fullScreenCover])
     }
 }
