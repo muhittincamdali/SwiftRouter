@@ -54,6 +54,7 @@ struct DeepLinkHostTests {
         ("https://m..example.org/catalog", .hostNotAllowed),
         ("https://shop.example.com:8443/catalog", .hostNotAllowed),
         ("https://shop.example.com:80/catalog", .hostNotAllowed),
+        ("https://shop.example.com:99999999999999999999/catalog", .hostNotAllowed),
         ("http://shop.example.com/catalog", .unsupportedScheme),
         ("ftp://shop.example.com/catalog", .unsupportedScheme),
         ("javascript:alert(1)", .unsupportedScheme),
