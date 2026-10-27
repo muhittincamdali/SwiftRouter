@@ -23,7 +23,7 @@ enum Screen: Route {
     }
 }
 
-struct QuickStartView: View {
+struct ContentView: View {
     @State private var router = Router<Screen>()
 
     var body: some View {
