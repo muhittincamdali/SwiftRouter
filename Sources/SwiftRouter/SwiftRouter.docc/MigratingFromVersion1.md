@@ -1,6 +1,6 @@
 # Migrating from version 1
 
-Move an app from SwiftRouter 1.0.0 to the typed router of 2.0.0.
+Move an app from SwiftRouter 1.0.0, or from SwiftUI-Navigation-Pro, to the typed router of 2.0.0.
 
 ## Overview
 
@@ -33,3 +33,37 @@ destination. It needs iOS 17, macOS 14, tvOS 17, watchOS 10 or visionOS 1, and S
    ``DeepLinkMatch/int(_:)`` and the other typed accessors instead of `RouteParameters`.
 5. If you logged navigation through `AnalyticsMiddleware`, observe ``Router/entries`` in your
    app and record the routes you need. Leave URLs out of such records: links can carry tokens.
+
+## Coming from SwiftUI-Navigation-Pro
+
+SwiftUI-Navigation-Pro is archived and its navigation features now live in SwiftRouter. Its last
+version with navigation code (commit `db5aac0`) does not build with Swift 6.4, so no file was
+copied: each feature below was written again on top of ``Router``.
+
+| SwiftUI-Navigation-Pro                                        | SwiftRouter 2.0.0                                                                                 |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `Router`, `Navigator`, `NavigationPathManager`                | ``Router`` shown by a ``RouterView``                                                              |
+| `SheetPresenter` and its `PresentationStyle`                  | ``Router/present(_:style:)`` with ``PresentationStyle``; a sheet has its own stack                |
+| Navigation guards of `NavigationPathManager`                  | ``RouteGuard`` with ``Router/addGuard(_:)``                                                       |
+| `NavigationState`, `encodeState()`, `restoreState(from:)`    | ``RouterSnapshot``, ``Router/snapshotData()``, ``Router/restore(from:)``                          |
+| `TabRouter`, `TabCoordinator`, `TabItem`                      | ``TabRouter`` with one router per tab                                                             |
+| `DeepLinkParser`, `DeepLinkHandler`                           | ``DeepLinks``, ``URLPattern`` and ``SwiftUICore/View/onDeepLink(_:router:perform:)``              |
+| `Coordinator`, `CoordinatorView`                              | A ``Router`` per flow in its own ``RouterView``, or a sheet whose stack holds the flow            |
+
+These parts are not carried over:
+
+- **`FlowCoordinator`, `FlowView`, `FlowProgressView`.** The step flow was a second state machine
+  beside the router, kept step data as `Any` (so it could be neither saved nor checked by the
+  compiler) and validated steps asynchronously, while SwiftRouter guards answer in the same
+  update on purpose. Its 35 tests could not run, because that commit does not build. Make each
+  step a route, push the next step with ``Router/push(_:)``, check a step with a ``RouteGuard``
+  and keep the answers in your own model.
+- **`NavigationHistory`.** A back and forward log beside the stack. ``Router/entries`` is the
+  current state and the router is `@Observable`; observe it if you need your own log, and leave
+  URLs out of it, because links can carry tokens.
+- **`UIKitNavigationBridge` and its transition animators.** SwiftRouter is SwiftUI-only. Host a
+  ``RouterView`` in a `UIHostingController` to use it in a UIKit app.
+- **`SideMenuCoordinator`, `SideMenuContainer`.** A drawer view rather than routing. Build the
+  menu in SwiftUI and call ``Router/setEntries(_:)`` or ``TabRouter/select(_:)`` from its items.
+- **Hero and custom transitions, A/B testing, analytics, recording and crash recovery.** They were
+  untested and are unrelated to routing.
