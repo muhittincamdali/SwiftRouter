@@ -1,0 +1,13 @@
+version: 1
+builder:
+  configs:
+    - platform: ios
+      scheme: SwiftRouter
+      documentation_targets: [SwiftRouter]
+    - platform: macos-spm
+    - platform: tvos
+      scheme: SwiftRouter
+    - platform: watchos
+      scheme: SwiftRouter
+    - platform: visionos
+      scheme: SwiftRouter

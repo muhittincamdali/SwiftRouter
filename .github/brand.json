@@ -1,0 +1,43 @@
+{
+  "name": "SwiftRouter",
+  "repository": "muhittincamdali/SwiftRouter",
+  "tagline": {
+    "en": "Type-safe SwiftUI navigation: stacks, sheets, deep links, guards and tabs in one router."
+  },
+  "tags": {
+    "en": [
+      "SwiftUI",
+      "Swift 6",
+      "5 platforms",
+      "No dependencies"
+    ]
+  },
+  "motif": "phone",
+  "buttons": [
+    "start",
+    "docs",
+    "examples"
+  ],
+  "links": {
+    "docs": "https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/",
+    "examples": "Examples/"
+  },
+  "languages": [
+    "en",
+    "tr",
+    "zh-CN",
+    "ja",
+    "ko",
+    "es",
+    "de",
+    "fr",
+    "pt-BR",
+    "ru"
+  ],
+  "docc": {
+    "targets": [
+      "SwiftRouter"
+    ]
+  },
+  "socialTheme": "dark"
+}
