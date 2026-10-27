@@ -121,6 +121,32 @@ struct TabRouterTests {
         #expect(tabs.selection == .account)
     }
 
+    @Test func aURLTheGuardsRefuseLeavesTheSelectionAlone() throws {
+        var links = DeepLinks<TestRoute>(schemes: ["shop"])
+        links.add("/orders") { _ in [.account, .orders] }
+        let url = try #require(URL(string: "shop://orders"))
+
+        let cancelling = TabRouter<Tab, TestRoute>(tabs: [.shop, .account])
+        cancelling.addGuard(RouteGuard("closed") { _, _ in .cancel })
+        #expect(cancelling.open(url, using: [.account: links]) == .navigated(.cancelled))
+        #expect(cancelling.selection == .shop)
+
+        let shallow = TabRouter<Tab, TestRoute>(tabs: [.shop, .account], maxDepth: 1)
+        #expect(shallow.open(url, using: [.account: links]) == .navigated(.rejected(.depthLimitExceeded(limit: 1))))
+        #expect(shallow.selection == .shop)
+    }
+
+    @Test func aURLAGuardRedirectsSelectsTheTab() throws {
+        var links = DeepLinks<TestRoute>(schemes: ["shop"])
+        links.add("/orders") { _ in [.account, .orders] }
+        let tabs = TabRouter<Tab, TestRoute>(tabs: [.shop, .account])
+        tabs.addGuard(.account(Session()))
+
+        #expect(tabs.open(try #require(URL(string: "shop://orders")), using: [.account: links]) == .navigated(.redirected))
+        #expect(tabs.selection == .account)
+        #expect(tabs.router(for: .account).entries == [.sheet(.signIn)])
+    }
+
     @Test func aGuardAddedToTheTabsChecksEveryTab() {
         let session = Session()
         let tabs = TabRouter<Tab, TestRoute>(tabs: [.shop, .account])

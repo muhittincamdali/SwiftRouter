@@ -44,6 +44,10 @@ tab whose links match it, selecting that tab:
 }
 ```
 
+The tab is selected when its router shows the entries or a guard redirects them, for example to
+a sign-in sheet in that tab. When a guard cancels the entries or they are deeper than
+``Router/maxDepth``, nothing changes and the selected tab stays as it is.
+
 ## Save and restore the state
 
 When the routes are `Codable`, a router can be saved and restored. The
