@@ -1,17 +1,11 @@
-## Description
+## What does this change?
 
-Brief description of changes.
+## How was it tested?
 
-## Type of Change
-
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-
-## Checklist
-
-- [ ] Tests added/updated
-- [ ] Documentation updated
-- [ ] SwiftLint passes
-- [ ] All tests pass
+- [ ] `swift test` passes
+- [ ] `xcodebuild test` passes on an iOS simulator
+- [ ] Logic changes have a unit test
+- [ ] Navigation changes pass the RouterDemo UI tests
+- [ ] README samples and `Examples/RouterDemo/RouterDemo/ReadmeSamples.swift` still match
+- [ ] README translations updated, or noted here if `README.md` changed
+- [ ] Screenshots regenerated with `scripts/capture-screens.sh` if the example app changed
