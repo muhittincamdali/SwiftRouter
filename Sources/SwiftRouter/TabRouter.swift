@@ -74,7 +74,10 @@ public final class TabRouter<Tab: Hashable, R: Route> {
         routers.values.forEach { $0.addGuard(routeGuard) }
     }
 
-    /// Opens a URL in the first tab whose links match it, selecting that tab.
+    /// Opens a URL in the first tab whose links match it.
+    ///
+    /// That tab is selected when its router shows the entries or a guard redirects them; when a
+    /// guard cancels them or they break a limit, the selection stays as it is.
     ///
     /// Returns the outcome of that tab, `.unmatched` when no tab matched, or the first rejection
     /// when every tab refused the URL.
@@ -85,8 +88,12 @@ public final class TabRouter<Tab: Hashable, R: Route> {
         for (tab, tabLinks) in links {
             switch tabLinks.resolve(url) {
             case .matched(let entries, _):
-                selection = tab
-                return .navigated(router(for: tab).setEntries(entries))
+                let outcome = router(for: tab).setEntries(entries)
+                switch outcome {
+                case .applied, .redirected: selection = tab
+                case .cancelled, .rejected: break
+                }
+                return .navigated(outcome)
             case .unmatched:
                 anyUnmatched = true
             case .rejected(let reason):
