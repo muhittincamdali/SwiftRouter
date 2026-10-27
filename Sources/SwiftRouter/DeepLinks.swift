@@ -143,7 +143,10 @@ public struct DeepLinks<R: Route>: Sendable {
         var leading: [Substring] = []
         if scheme == "https" {
             guard let host = components.encodedHost, isAllowed(host: host) else { return .rejected(.hostNotAllowed) }
-            guard components.port == nil || components.port == HostName.httpsPort else { return .rejected(.hostNotAllowed) }
+            // A port too large for Int leaves `port` nil, so the written port decides, not `port` alone.
+            guard components.rangeOfPort == nil || components.port == HostName.httpsPort else {
+                return .rejected(.hostNotAllowed)
+            }
         } else if schemes.contains(scheme) {
             if let host = components.percentEncodedHost, !host.isEmpty { leading = [Substring(host)] }
         } else {
