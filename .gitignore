@@ -1,11 +1,18 @@
 # Xcode
-*.xcodeproj
-*.xcworkspace
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+*.xcodeproj/project.xcworkspace/*
+!*.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
 xcuserdata/
-*.xccheckout
-*.moved-aside
+
+# Build
+build/
 DerivedData/
-*.hmap
+*.xcresult
+*.moved-aside
 *.ipa
 *.dSYM.zip
 *.dSYM
@@ -15,18 +22,10 @@ DerivedData/
 .swiftpm/
 Package.resolved
 
-# CocoaPods
-Pods/
-
-# Carthage
-Carthage/Build/
-
-# OS
+# macOS
 .DS_Store
 *.swp
-*~.nib
-Thumbs.db
 
-# IDE
-*.idea/
-*.vscode/
+# Local working files and the lychee cache of local link checks
+_work/
+.lycheecache
