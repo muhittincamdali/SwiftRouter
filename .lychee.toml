@@ -45,8 +45,8 @@ remap = [
   '^https://github\.com/muhittincamdali/SwiftRouter/(?:blob|tree)/main/(.*)$ file:///home/runner/work/SwiftRouter/SwiftRouter/$1',
   # The article pages on GitHub Pages are built from the .docc articles by docs.yml after a push
   # to main, so a pull request that adds an article links to a page that is not online yet. Each
-  # article URL is checked against its source file instead; the documentation root stays a live
-  # check, so a site that is down still fails.
+  # article URL, and the documentation root, is checked against its source file instead.
+  '^https://muhittincamdali\.github\.io/SwiftRouter/documentation/swiftrouter/?$ file:///home/runner/work/SwiftRouter/SwiftRouter/Sources/SwiftRouter/SwiftRouter.docc/SwiftRouter.md',
   '^https://muhittincamdali\.github\.io/SwiftRouter/documentation/swiftrouter/gettingstarted$ file:///home/runner/work/SwiftRouter/SwiftRouter/Sources/SwiftRouter/SwiftRouter.docc/GettingStarted.md',
   '^https://muhittincamdali\.github\.io/SwiftRouter/documentation/swiftrouter/deeplinking$ file:///home/runner/work/SwiftRouter/SwiftRouter/Sources/SwiftRouter/SwiftRouter.docc/DeepLinking.md',
   '^https://muhittincamdali\.github\.io/SwiftRouter/documentation/swiftrouter/guardingscreens$ file:///home/runner/work/SwiftRouter/SwiftRouter/Sources/SwiftRouter/SwiftRouter.docc/GuardingScreens.md',
