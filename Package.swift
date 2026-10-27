@@ -1,29 +1,27 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.2
 import PackageDescription
 
 let package = Package(
     name: "SwiftRouter",
     platforms: [
-        .iOS(.v15),
-        .macOS(.v13),
-        .tvOS(.v15),
-        .watchOS(.v8),
+        .iOS(.v17),
+        .macOS(.v14),
+        .tvOS(.v17),
+        .watchOS(.v10),
         .visionOS(.v1)
     ],
     products: [
-        .library(name: "SwiftRouter", targets: ["SwiftRouter"]),
+        .library(name: "SwiftRouter", targets: ["SwiftRouter"])
     ],
     targets: [
         .target(
             name: "SwiftRouter",
-            path: "Sources/SwiftRouter",
-            swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency")
-            ]
+            path: "Sources/SwiftRouter"
         ),
         .testTarget(
             name: "SwiftRouterTests",
-            dependencies: ["SwiftRouter"]
+            dependencies: ["SwiftRouter"],
+            path: "Tests/SwiftRouterTests"
         )
     ]
 )

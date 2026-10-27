@@ -1,136 +1,83 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project are documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
+adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Planned
-- watchOS full support
-- visionOS support
-- SwiftData persistence option
-- Navigation transition customization API
+## [2.0.0] - 2026-10-27
 
----
-
-## [1.0.0] - 2025-02-05
-
-### Added
-
-#### Core
-- **Router** - Central navigation coordinator with async/await support
-- **Route Protocol** - Type-safe route definitions with compile-time validation
-- **RouteRegistry** - Pattern-based route registration and resolution
-- **NavigationStack** - Full push/pop/present/dismiss management
-- **PathMatcher** - URL pattern matching with parameters, optionals, and wildcards
-- **RouterConfiguration** - Flexible router configuration options
-
-#### Deep Linking
-- **DeepLinkHandler** - Custom URL scheme handling (`myapp://`)
-- **UniversalLinkHandler** - Apple App Site Association (AASA) support
-- Automatic parameter extraction from URLs
-- Query parameter support
-- Fragment identifier support
-
-#### Middleware
-- **NavigationMiddleware Protocol** - Extensible middleware system
-- **AuthMiddleware** - Built-in authentication guards with:
-  - Role-based access control
-  - Permission system
-  - Rate limiting
-  - Session management
-  - Auto-refresh support
-- **AnalyticsMiddleware** - Navigation tracking with:
-  - Screen view tracking
-  - Timing metrics
-  - Event batching
-  - Offline persistence
-  - Sampling support
-- **ClosureMiddleware** - Quick inline middleware
-- **ConditionalMiddleware** - Conditional middleware execution
-
-#### SwiftUI Integration
-- **RouterView** - Drop-in NavigationStack replacement
-- **RouterLink** - Type-safe navigation links
-- **RouterBackButton** - Custom back button
-- **RouterDismissButton** - Modal dismiss button
-- **RouterPopToRootButton** - Pop to root action
-- Environment injection via `@Environment(\.router)`
-
-#### UIKit Integration
-- **UIKitRouter** - UINavigationController bridge
-- **ViewControllerFactory** - Route-to-ViewController mapping
-- Custom transition delegate support
-- Full push/pop/present/dismiss parity
-
-#### Tab Navigation
-- **TabRouter** - Multi-tab navigation management
-- **TabItem** - Tab configuration with badges
-- Independent navigation stacks per tab
-- Badge management (count, dot, text)
-- Tab visibility and enabled state
-- Double-tap to pop-to-root
-- State persistence
-
-#### Split View
-- **SplitViewRouter** - iPad split view support
-- Two-column and three-column layouts
-- Sidebar, content, and detail management
-- Adaptive compact behavior
-- State persistence
-
-#### Coordinator Pattern
-- **Coordinator Protocol** - Flow management
-- **AppCoordinator** - Root coordinator base class
-- **TabCoordinator** - Tab-based coordinator
-- Child coordinator management
-- Lifecycle events
-
-#### Models
-- **NavigationAction** - Push, pop, present, dismiss, replace, deep link
-- **TransitionStyle** - Sheet, fullscreen, fade, slide, zoom, custom
-- **RouteParameters** - Type-safe parameter container
-- **RouteParameterValue** - String, int, double, bool, UUID, date, array
-
-#### Testing
-- Comprehensive unit tests
-- Router mock support
-- Navigation assertion helpers
-
-### Security
-- Input validation on all route parameters
-- URL sanitization in deep link handling
-- Rate limiting in auth middleware
-
----
-
-## [0.9.0] - 2025-01-20 (Beta)
+Version 2.0.0 is a new router with a new API. In June 2026 the 1.0.0 sources were replaced with
+placeholder code; this release replaces that code and takes over the presentation, tab and
+state-saving features of SwiftUI-Navigation-Pro, which is being archived. Its flow coordinator,
+navigation history, UIKit bridge, side menu, transitions, A/B testing, analytics, recording and
+crash recovery are not carried over. The
+[migration guide](https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/migratingfromversion1)
+maps the 1.0.0 API and the SwiftUI-Navigation-Pro types to the new API and says what to use
+instead of each part that is not carried over.
 
 ### Added
-- Initial beta release
-- Core routing functionality
-- Basic SwiftUI support
+
+- `Route` protocol for an enum of screens, `RouteEntry` and `PresentationStyle` (`push`, `sheet`,
+  `fullScreenCover`).
+- `Router`, an `@Observable` main-actor class that holds the whole navigation state:
+  `push`, `push(contentsOf:)`, `present(_:style:)`, `setEntries`, `pop`, `popToRoot`, `popTo`,
+  `dismiss`, `dismissAll` and `reset`, with a `maxDepth` limit (64 by default).
+- `RouterView`, which shows the state with one `NavigationStack` per level, so a sheet has its own
+  stack and can present another sheet. The back button, the swipe back, a swipe down on a sheet
+  and `NavigationLink(value:)` update the router. macOS shows full-screen covers as sheets.
+- `RouterLink`, a button that pushes or presents a route.
+- `RouteGuard` with `allow`, `cancel` and `redirect`, `requiring(_:for:otherwise:name:)`,
+  `pending`, `resumePending()`, `discardPending()` and `revalidate()`. Guards check every entry
+  added by code, deep links, restored snapshots and `NavigationLink`.
+- `DeepLinks` and `URLPattern`: custom-scheme and universal links mapped to whole navigation
+  states, patterns with `:name`, `:name?` and `*` tried from the most specific, typed values in
+  `DeepLinkMatch`, `path(with:rest:)` to build links, `Router.open(_:using:)`,
+  `open(path:using:)` and the `onDeepLink(_:router:perform:)` modifier.
+- `TabRouter` with one router per tab, `popsToRootOnReselect`, `selectionBinding`, guards for every
+  tab and `open(_:using:)` per tab.
+- `RouterSnapshot`, `snapshotData()`, `restore(from:)` and the
+  `routerStateRestoration(_:key:)` modifier, which keeps the state in the scene's storage.
+- DocC documentation with five articles, and the RouterDemo example app for iOS and macOS with
+  UI tests.
 
 ### Changed
-- Refined API based on beta feedback
 
-### Fixed
-- Memory leaks in navigation stack
-- Thread safety issues in middleware chain
+- **Breaking:** the package needs Swift 6.2 and iOS 17, macOS 14, tvOS 17, watchOS 10 or
+  visionOS 1.
+- **Breaking:** the 1.0.0 string registry (`Router`, `RouteRegistry`, `RouteParameters`),
+  middleware (`NavigationMiddleware`, `AuthMiddleware`, `AnalyticsMiddleware`), `TransitionStyle`,
+  `RouterConfiguration`, `RouterDelegate` and the UIKit router are replaced by the API above.
 
----
+### Removed
 
-## Version History
+- The CocoaPods podspec. It was never published (the name belongs to another pod on the trunk);
+  use Swift Package Manager.
+- The placeholder `CircuitBreaker`, `RetryPolicy`, `EventBus`, `MetricsCollector` and
+  `ErrorHandler` types and the `SwiftRouter.version` constant from the June 2026 code.
+- Debug logging. The package does not print or log URLs, routes or events.
 
-| Version | Release Date | Swift | iOS | Status |
-|---------|-------------|-------|-----|--------|
-| 1.0.0 | 2025-02-05 | 5.9+ | 15+ | **Current** |
-| 0.9.0 | 2025-01-20 | 5.9+ | 15+ | Beta |
+### Security
 
----
+- Deep links are checked before any pattern runs: URL length, segment and query item limits,
+  `https` only on listed hosts written as plain DNS names (never percent-decoded) on port 443, no
+  user names or passwords, no `.` or `..` segments (also percent-encoded), no control or
+  bidirectional formatting characters and no invalid UTF-8.
+  Typed values are `nil` for out-of-range integers, `nan` and `inf` instead of trapping.
+- The June 2026 `UniversalLinkParser` printed every incoming URL to the console, which wrote
+  tokens carried by links into the device log. It is removed.
+- Restored snapshots are limited to 256 KiB and `maxDepth` entries and go through the guards.
 
-[Unreleased]: https://github.com/muhittincamdali/SwiftRouter/compare/v1.0.0...HEAD
+## [1.0.0] - 2026-02-03
+
+### Added
+
+- First release: a router with a string-based route registry, a deep link handler for a custom
+  scheme and universal link hosts, navigation middleware for authentication and analytics, a
+  coordinator, SwiftUI views and a UIKit router.
+
+[Unreleased]: https://github.com/muhittincamdali/SwiftRouter/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/muhittincamdali/SwiftRouter/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/muhittincamdali/SwiftRouter/releases/tag/v1.0.0
-[0.9.0]: https://github.com/muhittincamdali/SwiftRouter/releases/tag/v0.9.0

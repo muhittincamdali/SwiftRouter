@@ -1,553 +1,369 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/Swift-6.0-FA7343?style=for-the-badge&logo=swift&logoColor=white" alt="Swift 6.0"/>
-  <img src="https://img.shields.io/badge/Platform-iOS%20|%20macOS%20|%20visionOS-007AFF?style=for-the-badge&logo=apple&logoColor=white" alt="Platform"/>
-  <img src="https://img.shields.io/badge/Standard-Unified%20Core-5856D6?style=for-the-badge" alt="Standard"/>
-</p>
+<!-- brand:start -->
 
----
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/banner-dark.svg"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/banner-light.svg"><img src="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/banner-light.svg" alt="SwiftRouter: Type-safe SwiftUI navigation: stacks, sheets, deep links, guards and tabs in one router."></picture></p>
 
-## 🚀 Killer Feature: Universal DeepLink Parser
-Handle complex Universal Links with zero effort. The parser automatically extracts path variables and maps them directly to your strongly-typed `Route` enums.
-> **🛡️ PART OF THE 2026 UNIFIED CORE**
-> This repository is a verified component of 'The Endless March' initiative. Purified for Swift 6, zero-dependency, and engineered for maximum hardware saturation.
-> 
-> *Flagship Engines:* [SwiftNetwork](https://github.com/muhittincamdali/SwiftNetwork) | [SwiftAI](https://github.com/muhittincamdali/SwiftAI) | [LiquidGlassKit](https://github.com/muhittincamdali/LiquidGlassKit)
-
----
-
-```
-   _____ _    _ _____ ______ _______ _____   ____  _    _ _______ ______ _____  
-  / ____| |  | |_   _|  ____|__   __|  __ \ / __ \| |  | |__   __|  ____|  __ \ 
- | (___ | |  | | | | | |__     | |  | |__) | |  | | |  | |  | |  | |__  | |__) |
-  \___ \| |  | | | | |  __|    | |  |  _  /| |  | | |  | |  | |  |  __| |  _  / 
-  ____) | |__| |_| |_| |       | |  | | \ \| |__| | |__| |  | |  | |____| | \ \ 
- |_____/ \____/|_____|_|       |_|  |_|  \_\\____/ \____/   |_|  |______|_|  \_\
-```
+<!-- lang-selector:start -->
+<p align="center"><a href="README.md">English</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.ja.md">日本語</a> · <a href="README.ko.md">한국어</a> · <a href="README.es.md">Español</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.ru.md">Русский</a></p>
+<!-- lang-selector:end -->
 
 <p align="center">
-  <strong>🧭 The most powerful, type-safe navigation router for iOS</strong>
+<a href="https://github.com/muhittincamdali/SwiftRouter/actions/workflows/ci.yml"><img src="https://github.com/muhittincamdali/SwiftRouter/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+<a href="https://github.com/muhittincamdali/SwiftRouter/releases"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-version-dark.svg"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-version-light.svg"><img src="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-version-light.svg" alt="Latest version: v1.0.0"></picture></a>
+<a href="https://github.com/muhittincamdali/SwiftRouter/blob/main/Package.swift"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-platforms-dark.svg"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-platforms-light.svg"><img src="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-platforms-light.svg" alt="Supported platforms: iOS 17+ · macOS 14+ · tvOS 17+ · watchOS 10+ · visionOS 1+"></picture></a>
+<a href="https://github.com/muhittincamdali/SwiftRouter/blob/main/Package.swift"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-language-dark.svg"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-language-light.svg"><img src="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-language-light.svg" alt="Language version: Swift 6.2+"></picture></a>
+<a href="https://github.com/muhittincamdali/SwiftRouter/blob/main/LICENSE"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-license-dark.svg"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-license-light.svg"><img src="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/badge-license-light.svg" alt="License: MIT"></picture></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/muhittincamdali/SwiftRouter/actions/workflows/ci.yml">
-    <img src="https://github.com/muhittincamdali/SwiftRouter/actions/workflows/ci.yml/badge.svg" alt="CI"/>
-  </a>
-  <a href="https://codecov.io/gh/muhittincamdali/SwiftRouter">
-    <img src="https://codecov.io/gh/muhittincamdali/SwiftRouter/branch/main/graph/badge.svg" alt="codecov"/>
-  </a>
-  <img src="https://img.shields.io/badge/Swift-5.9+-orange.svg" alt="Swift 5.9+"/>
-  <img src="https://img.shields.io/badge/iOS-15.0+-blue.svg" alt="iOS 15.0+"/>
-  <img src="https://img.shields.io/badge/macOS-13.0+-purple.svg" alt="macOS 13.0+"/>
-  <a href="https://github.com/muhittincamdali/SwiftRouter/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"/>
-  </a>
-  <a href="https://swift.org/package-manager/">
-    <img src="https://img.shields.io/badge/SPM-compatible-brightgreen.svg" alt="SPM"/>
-  </a>
+<a href="#quick-start"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/button-start-en-dark.svg"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/button-start-en-light.svg"><img src="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/button-start-en-light.svg" alt="Get started"></picture></a>
+<a href="https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/button-docs-en-dark.svg"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/button-docs-en-light.svg"><img src="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/button-docs-en-light.svg" alt="Documentation"></picture></a>
+<a href="https://github.com/muhittincamdali/SwiftRouter/tree/main/Examples"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/button-examples-en-dark.svg"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/button-examples-en-light.svg"><img src="https://raw.githubusercontent.com/muhittincamdali/SwiftRouter/main/.github/brand/button-examples-en-light.svg" alt="Examples"></picture></a>
 </p>
 
-<p align="center">
-  <a href="#-features">Features</a> •
-  <a href="#-installation">Installation</a> •
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-architecture">Architecture</a> •
-  <a href="#-advanced-usage">Advanced</a> •
-  <a href="#-migration">Migration</a> •
-  <a href="#-documentation">Documentation</a>
-</p>
+<!-- brand:end -->
 
----
+SwiftRouter is a Swift package for navigation in SwiftUI apps on iOS 17+, macOS 14+, tvOS 17+,
+watchOS 10+ and visionOS 1+. You list your screens in an enum, and one `Router` holds the whole
+navigation state: the pushed screens, the sheets and full-screen covers on top of them, and the
+screens pushed inside those sheets. Deep links map to that state, guards check every screen
+before it appears, and each tab can keep its own stack. The package has no dependencies.
 
-## Why SwiftRouter?
+<table>
+<tr>
+<td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/product-dark.png"><img src="docs/images/product-light.png" width="200" alt="A product screen opened by the link routerdemo://products/2"></picture><br><sub><code>routerdemo://products/2</code></sub></td>
+<td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/reviews-dark.png"><img src="docs/images/reviews-light.png" width="200" alt="The reviews screen pushed on top of the product by one link"></picture><br><sub><code>…/products/2/reviews</code></sub></td>
+<td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/cart-dark.png"><img src="docs/images/cart-light.png" width="200" alt="The cart presented as a sheet by a link"></picture><br><sub><code>routerdemo://cart</code></sub></td>
+<td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/sign-in-dark.png"><img src="docs/images/sign-in-light.png" width="200" alt="A link to an order while signed out shows the sign-in sheet"></picture><br><sub><code>…/account/orders/1001</code></sub></td>
+</tr>
+</table>
 
-Navigation in iOS apps is often **scattered, hard to test, and tightly coupled** to views. Deep linking requires manual URL parsing. State restoration is complex. **SwiftRouter** solves all of this.
+The screenshots come from the [example app](Examples/RouterDemo) on an iPhone simulator: each
+one is the state the router reached from the link below it
+([`scripts/capture-screens.sh`](scripts/capture-screens.sh)).
 
-```swift
-// ❌ Before: Scattered, untestable navigation
-NavigationLink(destination: ProfileView(userId: userId)) { ... }
-// Deep link parsing in AppDelegate
-// State restoration in SceneDelegate
-// No middleware, no analytics, no auth checks
+## Highlights
 
-// ✅ After: Unified, type-safe, testable routing
-router.push(ProfileRoute(userId: userId))
-// Deep links work automatically
-// State persists automatically
-// Middleware handles auth, analytics, logging
+- **Typed routes** — screens are enum cases with associated values, so a destination that does
+  not exist does not compile.
+- **One state for stacks and sheets** — `router.entries` lists every pushed screen, sheet and
+  full-screen cover. A sheet has its own navigation stack and can present another sheet. The back
+  button, the swipe back and the swipe down on a sheet write back into the router.
+- **Deep links to whole states** — `shop://products/42` and
+  `https://shop.example.com/products/42` can open the catalog with the product on top, or a sheet.
+  Patterns such as `/products/:id` are matched from the most specific, and paths for sharing are
+  built from the same patterns.
+- **Links are checked before they are used** — length, segment and query limits, `https` only on
+  the hosts you list, no `..` segments, no control characters, and typed values that are `nil`
+  instead of trapping (`Int` overflow, `nan`, `inf`).
+- **Guards that no path skips** — a guard sees every screen added by a push, a sheet, a deep link,
+  a restored snapshot or a `NavigationLink`. A redirect to sign-in keeps the request, and
+  `resumePending()` opens it after sign-in.
+- **Tabs and state restoration** — `TabRouter` keeps one stack per tab and pops to the root when
+  the selected tab is chosen again; `routerStateRestoration(_:key:)` saves the state per scene
+  and sends it through the guards when it comes back.
+- **Tested** — 86 Swift Testing tests on macOS and an iPhone simulator, and 7 UI tests that drive
+  the example app on an iOS 27 simulator: push and back, a deep link three screens deep, the
+  sign-in sheet on top of the cart sheet, and resuming the request after signing in.
+
+## Quick start
+
+**1. Add the package**
+
+In Xcode, choose **File › Add Package Dependencies…** and paste the repository URL into the
+search field at the top right:
+
+```text
+https://github.com/muhittincamdali/SwiftRouter.git
 ```
 
-## 🌟 Features
+Leave **Dependency Rule** at **Up to Next Major Version** from `2.0.0` and click **Add Package**.
+In the next window, choose your app target next to **SwiftRouter** and click **Add Package**
+again.
 
-| Feature | Description |
-|---------|-------------|
-| 🎯 **Type-Safe Routes** | Compile-time validation with Swift's type system |
-| 🔗 **Deep Linking** | URL schemes and Universal Links out of the box |
-| 💾 **State Persistence** | Automatic navigation state save/restore |
-| ⚡ **Async/Await** | Modern Swift concurrency throughout |
-| 🧪 **100% Testable** | Mock router for unit testing |
-| 🛡️ **Auth Middleware** | Built-in authentication guards |
-| 📊 **Analytics Middleware** | Track every navigation event |
-| 📱 **SwiftUI Native** | First-class SwiftUI support |
-| 🎨 **UIKit Support** | Full UINavigationController integration |
-| 🗂️ **Tab Navigation** | Multi-tab with independent stacks |
-| 📐 **Split View** | iPad split view support |
-| 🎭 **Coordinator Pattern** | Built-in coordinator support |
-
-## 📦 Installation
-
-### Swift Package Manager
-
-```swift
-dependencies: [
-    .package(url: "https://github.com/muhittincamdali/SwiftRouter.git", from: "1.0.0")
-]
-```
-
-### CocoaPods
-
-```ruby
-pod 'SwiftRouter', '~> 1.0'
-```
-
-## 🚀 Quick Start
-
-### 1. Define Your Routes
+**2. Import the module**
 
 ```swift
 import SwiftRouter
-
-struct HomeRoute: Route {
-    static let pattern = "/home"
-    var parameters: RouteParameters { [:] }
-    
-    init(parameters: RouteParameters) throws {}
-}
-
-struct ProfileRoute: Route {
-    static let pattern = "/profile/:userId"
-    let userId: String
-    
-    var parameters: RouteParameters {
-        ["userId": .string(userId)]
-    }
-    
-    init(parameters: RouteParameters) throws {
-        guard let userId = parameters.string(for: "userId") else {
-            throw RouteError.missingParameter("userId")
-        }
-        self.userId = userId
-    }
-}
-
-struct SettingsRoute: Route {
-    static let pattern = "/settings/:section?"
-    let section: String?
-    
-    var parameters: RouteParameters {
-        var params: [String: RouteParameterValue] = [:]
-        if let section { params["section"] = .string(section) }
-        return RouteParameters(params)
-    }
-    
-    init(parameters: RouteParameters) throws {
-        self.section = parameters.string(for: "section")
-    }
-}
 ```
 
-### 2. Setup Router
+Put this line at the top of each Swift file that uses the router, next to `import SwiftUI`.
+
+**3. Use it**
+
+In a new Xcode app (**File › New › Project… › App**), replace everything in `ContentView.swift`
+with:
 
 ```swift
-@main
-struct MyApp: App {
-    @StateObject private var router = Router(
-        configuration: RouterConfiguration(
-            deepLinkScheme: "myapp",
-            universalLinkHosts: ["example.com"]
-        )
-    )
-    
-    var body: some Scene {
-        WindowGroup {
-            RouterView(router: router) { route in
-                switch route {
-                case let route as HomeRoute:
-                    HomeView()
-                case let route as ProfileRoute:
-                    ProfileView(userId: route.userId)
-                case let route as SettingsRoute:
-                    SettingsView(section: route.section)
-                default:
-                    NotFoundView()
-                }
-            }
-            .onOpenURL { url in
-                Task {
-                    try? await router.handleDeepLink(url)
-                }
-            }
+import SwiftRouter
+import SwiftUI
+
+enum Screen: Route {
+    case detail(Int)
+    case about
+
+    @ViewBuilder
+    func view() -> some View {
+        switch self {
+        case .detail(let number):
+            Text("Item \(number)")
+                .navigationTitle("Detail")
+        case .about:
+            Text("SwiftRouter quick start")
+                .navigationTitle("About")
         }
     }
 }
-```
 
-### 3. Navigate
+struct ContentView: View {
+    @State private var router = Router<Screen>()
 
-```swift
-struct HomeView: View {
-    @Environment(\.router) private var router
-    
     var body: some View {
-        VStack(spacing: 20) {
-            RouterLink(to: ProfileRoute(userId: "123")) {
-                Label("View Profile", systemImage: "person")
-            }
-            
-            Button("Open Settings") {
-                Task {
-                    try? await router?.navigate(
-                        to: SettingsRoute(section: "privacy"),
-                        action: .present(style: .sheet)
-                    )
+        RouterView(router: router) {
+            List {
+                RouterLink("Open item 1", to: Screen.detail(1))
+                RouterLink("About", to: Screen.about, style: .sheet)
+                Button("Open items 2 and 3") {
+                    router.push(contentsOf: [.detail(2), .detail(3)])
                 }
             }
+            .navigationTitle("Home")
         }
     }
 }
 ```
 
-## 🏗️ Architecture
+Press **Run** (⌘R). **Open item 1** pushes a screen, **About** opens a sheet (swipe it down to
+close it), and **Open items 2 and 3** pushes two screens at once; the back button goes back one
+screen at a time.
 
-```mermaid
-graph TB
-    subgraph "SwiftRouter Architecture"
-        A[Your App] --> B[Router]
-        B --> C[Route Registry]
-        B --> D[Middleware Chain]
-        B --> E[Navigation Stack]
-        
-        D --> D1[Auth Middleware]
-        D --> D2[Analytics Middleware]
-        D --> D3[Custom Middleware]
-        
-        E --> F[SwiftUI RouterView]
-        E --> G[UIKit UIKitRouter]
-        
-        H[Deep Link URL] --> I[DeepLinkHandler]
-        I --> C
-        C --> B
-        
-        J[Universal Link] --> K[UniversalLinkHandler]
-        K --> C
-    end
-    
-    style B fill:#f96,stroke:#333,stroke-width:2px
-    style D fill:#9cf,stroke:#333,stroke-width:2px
-    style E fill:#9f9,stroke:#333,stroke-width:2px
-```
+## Installation
 
-### Core Components
+### Swift Package Manager
 
-| Component | Responsibility |
-|-----------|---------------|
-| **Router** | Central navigation coordinator |
-| **Route** | Type-safe destination definition |
-| **RouteRegistry** | Pattern matching and route resolution |
-| **NavigationStack** | Push/pop/present/dismiss management |
-| **DeepLinkHandler** | URL scheme resolution |
-| **UniversalLinkHandler** | AASA-based link handling |
-| **Middleware** | Cross-cutting navigation concerns |
-| **Coordinator** | Flow management (optional) |
-
-## 🔥 Advanced Usage
-
-### Middleware
+In Xcode, choose **File › Add Package Dependencies…** and enter
+`https://github.com/muhittincamdali/SwiftRouter.git`, or add it to the `dependencies` in your
+`Package.swift`:
 
 ```swift
-// Authentication Middleware
-let authMiddleware = AuthMiddleware(
-    provider: myAuthProvider,
-    configuration: .init(
-        loginRoute: "/login",
-        publicPatterns: ["/login", "/register", "/forgot-password"]
-    )
-)
-
-// Analytics Middleware
-let analyticsMiddleware = AnalyticsMiddleware(
-    tracker: FirebaseAnalyticsTracker(),
-    configuration: .init(
-        trackScreenViews: true,
-        trackTiming: true
-    )
-)
-
-// Add to router
-router.use(authMiddleware)
-router.use(analyticsMiddleware)
+dependencies: [
+    .package(url: "https://github.com/muhittincamdali/SwiftRouter.git", from: "2.0.0")
+],
+targets: [
+    .target(name: "YourApp", dependencies: [
+        .product(name: "SwiftRouter", package: "SwiftRouter")
+    ])
+]
 ```
 
-### Custom Middleware
+### Requirements
+
+| | Minimum |
+| --- | --- |
+| Swift | 6.2 (Xcode 26 or later) |
+| Platforms | iOS 17, macOS 14, tvOS 17, watchOS 10, visionOS 1 |
+
+Version 2.0.0 replaces the API of 1.0.0 (February 2026), which looked routes up by string at run
+time. In June 2026 the 1.0.0 sources were replaced with placeholder code; 2.0.0 is a new router
+built and tested for the Swift 6 language mode, and it takes over the presentation, tab and
+state-saving features of SwiftUI-Navigation-Pro. [CHANGELOG.md](CHANGELOG.md) lists the changes and
+[Migrating from version 1](https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/migratingfromversion1)
+maps the old API to the new one.
+
+## Usage
+
+The samples below are copied from
+[`Examples/RouterDemo/RouterDemo/ReadmeSamples.swift`](Examples/RouterDemo/RouterDemo/ReadmeSamples.swift).
+The example app and the test suite both compile that file, and the tests run the deep link and
+sign-in samples.
+
+### Navigate
+
+Screens inside a `RouterView`, sheets included, read the router from the environment:
 
 ```swift
-struct RateLimitMiddleware: NavigationMiddleware {
-    let name = "RateLimit"
-    let priority = 50
-    
-    private let maxNavigationsPerSecond: Int
-    private var navigationTimes: [Date] = []
-    
-    func handle(context: NavigationContext) async throws {
-        let now = Date()
-        navigationTimes = navigationTimes.filter { now.timeIntervalSince($0) < 1.0 }
-        
-        guard navigationTimes.count < maxNavigationsPerSecond else {
-            throw RouterError.custom("Rate limit exceeded")
+@Environment(Router<AppRoute>.self) private var router
+```
+
+| Call | What it does |
+| --- | --- |
+| `push(_:)`, `push(contentsOf:)` | Pushes one or more screens onto the top-most stack |
+| `present(_:style:)` | Shows a `.sheet` or `.fullScreenCover` with its own stack |
+| `pop(_:)`, `popToRoot()` | Pops pushed screens of the top-most stack; never closes a sheet |
+| `popTo(_:)` | Pops to the last occurrence of a route, across sheets |
+| `dismiss()`, `dismissAll()` | Closes the top-most sheet, or every sheet |
+| `reset()` | Closes everything and pops to the root view |
+| `setEntries(_:)` | Replaces the whole state, for example `[.push(.product(id: 3)), .sheet(.cart)]` |
+
+Each call that adds screens returns `.applied`, `.redirected` (a guard showed something else),
+`.cancelled` (a guard refused) or `.rejected` (more than `maxDepth` entries, 64 by default).
+
+### Deep links
+
+```swift
+enum ShopRoute: Route, Codable {
+    case catalog
+    case product(id: Int)
+    case cart
+    case orders
+    case signIn
+
+    var needsAccount: Bool { self == .orders }
+
+    func view() -> some View {
+        Text(String(describing: self))
+    }
+}
+
+func makeShopLinks() -> DeepLinks<ShopRoute> {
+    var links = DeepLinks<ShopRoute>(schemes: ["shop"], hosts: ["shop.example.com"])
+    links.add("/products/:id") { match in
+        guard let id = match.int("id") else { return nil }
+        return [.catalog, .product(id: id)]
+    }
+    links.add("/cart", entries: { _ in [.sheet(.cart)] })
+    links.add("/orders") { _ in [.orders] }
+    return links
+}
+
+struct ShopView: View {
+    @State private var router = Router<ShopRoute>()
+    private let links = makeShopLinks()
+
+    var body: some View {
+        RouterView(router: router) {
+            Text("Home")
         }
-        
-        navigationTimes.append(now)
+        .onDeepLink(links, router: router)
     }
 }
 ```
 
-### Coordinator Pattern
+`shop://products/42` and `https://shop.example.com/products/42` both open the catalog with
+product 42 on top, so the back button leads to the catalog. In a custom-scheme URL the host is
+read as the first path segment. `onDeepLink` receives custom schemes through `onOpenURL` and
+universal links through `onContinueUserActivity`. Register the scheme under **URL Types** in your
+target; universal links also need the Associated Domains entitlement.
+
+A handler returns `nil` when a value is not acceptable, and the next matching pattern is tried.
+A link that matches no pattern, or that is refused, leaves the navigation state as it is.
+
+### Guards
 
 ```swift
 @MainActor
-final class OnboardingCoordinator: Coordinator {
-    let id = UUID()
-    let router: Router
-    var childCoordinators: [any Coordinator] = []
-    weak var parentCoordinator: (any Coordinator)?
-    
-    init(router: Router) {
-        self.router = router
-    }
-    
-    func start() async {
-        try? await router.navigate(to: WelcomeRoute())
-    }
-    
-    func showTerms() async {
-        try? await router.navigate(to: TermsRoute())
-    }
-    
-    func completeOnboarding() async {
-        await finish()
-        // Notify parent to show main app
+@Observable
+final class AccountSession {
+    var isSignedIn = false
+}
+
+@MainActor
+func protectOrders(_ router: Router<ShopRoute>, session: AccountSession) {
+    router.addGuard(.requiring(
+        { session.isSignedIn },
+        for: { $0.needsAccount },
+        otherwise: [.sheet(.signIn)]
+    ))
+}
+
+@MainActor
+func signIn(_ router: Router<ShopRoute>, session: AccountSession) {
+    session.isSignedIn = true
+    if router.resumePending() == nil {
+        router.dismiss()
     }
 }
 ```
 
-### Tab Navigation
+While signed out, `shop://orders` shows the sign-in sheet and keeps the request. `signIn` then
+replaces the sheet with the orders screen. After signing out, call `router.revalidate()` to
+remove the screens that are no longer allowed.
+
+### Tabs and state restoration
 
 ```swift
-let tabRouter = TabRouter(
-    tabs: [
-        TabItem(id: "home", title: "Home", systemImage: "house", routeIdentifier: "/home", order: 0),
-        TabItem(id: "search", title: "Search", systemImage: "magnifyingglass", routeIdentifier: "/search", order: 1),
-        TabItem(id: "profile", title: "Profile", systemImage: "person", routeIdentifier: "/profile", order: 2)
-    ],
-    configuration: .init(
-        doubleTapResetsNavigation: true,
-        trackHistory: true
-    )
-)
-
-// Navigate
-try tabRouter.selectTab("search")
-
-// Update badge
-tabRouter.updateBadge(.count(5), for: "home")
-```
-
-### Split View (iPad)
-
-```swift
-let splitRouter = SplitViewRouter(
-    configuration: .init(
-        layout: .tripleColumn,
-        autoSelectFirstSidebarItem: true
-    )
-)
-
-splitRouter.registerSidebarItems(["inbox", "sent", "drafts"])
-splitRouter.registerContentItems(["msg1", "msg2"], for: "inbox")
-
-splitRouter.selectSidebarItem("inbox")
-splitRouter.navigateToDetail("/message/123")
-```
-
-### Deep Linking
-
-```swift
-// URL Scheme: myapp://profile/123
-// Universal Link: https://example.com/profile/123
-
-// Both automatically resolve to ProfileRoute(userId: "123")
-
-// Custom URL building
-let url = router.deepLinkHandler.buildURL(
-    for: ProfileRoute(userId: "456"),
-    queryItems: [URLQueryItem(name: "ref", value: "share")]
-)
-// myapp://profile/456?ref=share
-```
-
-### State Persistence
-
-```swift
-let router = Router(
-    configuration: RouterConfiguration(
-        // State automatically saved to UserDefaults
-    )
-)
-
-// Manual save/restore
-router.navigationStack.save(to: userDefaults, key: "nav_state")
-router.navigationStack.restore(from: userDefaults, key: "nav_state")
-```
-
-## 🔄 Migration
-
-### From Coordinator-based Navigation
-
-```swift
-// Before
-class ProfileCoordinator {
-    func showProfile(userId: String) {
-        let vc = ProfileViewController(userId: userId)
-        navigationController.pushViewController(vc, animated: true)
-    }
+enum AppTab: String, Hashable, CaseIterable {
+    case shop, orders
 }
 
-// After
-try await router.navigate(to: ProfileRoute(userId: userId))
-```
+struct TabsView: View {
+    @State private var tabs = TabRouter<AppTab, ShopRoute>(tabs: AppTab.allCases)
 
-### From NavigationLink
+    var body: some View {
+        TabView(selection: tabs.selectionBinding) {
+            RouterView(router: tabs.router(for: .shop)) {
+                Text("Catalog")
+            }
+            .routerStateRestoration(tabs.router(for: .shop), key: "shop")
+            .tabItem { Label("Shop", systemImage: "bag") }
+            .tag(AppTab.shop)
 
-```swift
-// Before
-NavigationLink(destination: ProfileView(userId: id)) {
-    Text("Profile")
-}
-
-// After
-RouterLink(to: ProfileRoute(userId: id)) {
-    Text("Profile")
-}
-```
-
-### From Manual Deep Link Handling
-
-```swift
-// Before
-func application(_ app: UIApplication, open url: URL) -> Bool {
-    guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
-        return false
-    }
-    // 50+ lines of manual parsing...
-}
-
-// After
-func application(_ app: UIApplication, open url: URL) -> Bool {
-    Task { try? await router.handleDeepLink(url) }
-    return true
-}
-```
-
-## 🆚 Comparison
-
-| Feature | SwiftRouter | URLNavigator | Coordinator | Raw NavigationStack |
-|---------|-------------|--------------|-------------|---------------------|
-| Type-Safe Routes | ✅ | ❌ | ⚠️ | ⚠️ |
-| Deep Linking | ✅ | ✅ | ❌ | ❌ |
-| Universal Links | ✅ | ❌ | ❌ | ❌ |
-| Middleware | ✅ | ❌ | ❌ | ❌ |
-| State Persistence | ✅ | ❌ | ❌ | ❌ |
-| Async/Await | ✅ | ❌ | ⚠️ | ❌ |
-| SwiftUI Native | ✅ | ⚠️ | ⚠️ | ✅ |
-| UIKit Support | ✅ | ✅ | ✅ | ❌ |
-| Tab Navigation | ✅ | ❌ | ⚠️ | ❌ |
-| Split View | ✅ | ❌ | ❌ | ✅ |
-| Testable | ✅ | ⚠️ | ✅ | ❌ |
-
-## 🧪 Testing
-
-```swift
-class NavigationTests: XCTestCase {
-    var router: Router!
-    
-    override func setUp() {
-        router = Router()
-        router.register(ProfileRoute.self)
-        router.register(SettingsRoute.self)
-    }
-    
-    func testPushNavigation() async throws {
-        try await router.navigate(to: ProfileRoute(userId: "123"))
-        
-        XCTAssertEqual(router.navigationStack.depth, 1)
-        XCTAssertTrue(router.navigationStack.topRoute is ProfileRoute)
-    }
-    
-    func testDeepLink() async throws {
-        let url = URL(string: "myapp://profile/456")!
-        try await router.handleDeepLink(url)
-        
-        let route = router.navigationStack.topRoute as? ProfileRoute
-        XCTAssertEqual(route?.userId, "456")
-    }
-    
-    func testMiddleware() async throws {
-        var middlewareCalled = false
-        
-        router.use(ClosureMiddleware(name: "Test") { _ in
-            middlewareCalled = true
-        })
-        
-        try await router.navigate(to: ProfileRoute(userId: "123"))
-        
-        XCTAssertTrue(middlewareCalled)
+            RouterView(router: tabs.router(for: .orders)) {
+                Text("Orders")
+            }
+            .routerStateRestoration(tabs.router(for: .orders), key: "orders")
+            .tabItem { Label("Orders", systemImage: "shippingbox") }
+            .tag(AppTab.orders)
+        }
     }
 }
 ```
 
-## 📚 Documentation
+Each tab keeps its own stack, and choosing the selected tab again pops it to the root.
+`tabs.open(url, using: [.shop: shopLinks, .orders: orderLinks])` opens a link in the first tab
+whose links match it. The state is saved in the scene's storage, so each window keeps its own,
+and it comes back after the system ends the app in the background. The routes must be `Codable`
+for that.
 
-Full DocC documentation available:
+## How links are checked
 
-```bash
-# Generate documentation
-swift package generate-documentation
+A URL comes from outside the app, so `DeepLinks` checks it before any pattern runs:
 
-# Preview documentation
-swift package --disable-sandbox preview-documentation
+| Input | Result |
+| --- | --- |
+| Longer than 2,048 bytes, more than 32 segments or 32 query items | Refused; the length is checked first |
+| `http`, an unknown scheme, `https` on a host you did not list | Refused; `*.example.com` accepts subdomains only |
+| A user name or password in the URL | Refused |
+| A `.` or `..` segment, also written as `%2e` | Refused, not resolved |
+| `%2F` | Stays inside one segment |
+| Control characters, bidirectional formatting characters, bytes that are not UTF-8 | Refused |
+| `nan`, `inf`, `4.5` or `99999999999999999999` read with `int` or `double` | `nil` |
+
+The limits are set with `DeepLinkLimits`. The package never prints or logs URLs or routes; links
+can carry sign-in or reset tokens. The
+[Deep linking](https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/deeplinking)
+article lists every rule.
+
+## Example app
+
+[`Examples/RouterDemo`](Examples/RouterDemo) is a small shop for iOS and macOS: a Shop and an
+Account tab, products with reviews, a cart sheet, orders behind a sign-in guard, deep links on
+the `routerdemo://` scheme and saved state. Open `Examples/RouterDemo/RouterDemo.xcodeproj`,
+choose the **RouterDemo** scheme and an iPhone simulator or **My Mac**, and press **Run** (⌘R).
+To try a link on the simulator:
+
+```sh
+xcrun simctl openurl booted "routerdemo://products/2/reviews"
 ```
 
-### Guides
-- [Getting Started](Documentation/GettingStarted.md)
-- [Route Definition](Documentation/Routes.md)
-- [Deep Linking](Documentation/DeepLinking.md)
-- [Middleware](Documentation/Middleware.md)
-- [Coordinator Pattern](Documentation/Coordinators.md)
-- [Testing](Documentation/Testing.md)
+The **RouterDemoUITests** target (⌘U on an iPhone simulator) checks the flows on screen.
 
-## 🤝 Contributing
+## Documentation
 
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
+The [documentation](https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/)
+covers every public type, with these articles:
 
-## 📄 License
+- [Getting started](https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/gettingstarted)
+- [Deep linking](https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/deeplinking)
+- [Guarding screens](https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/guardingscreens)
+- [Tabs and state restoration](https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/tabsandstaterestoration)
+- [Migrating from version 1](https://muhittincamdali.github.io/SwiftRouter/documentation/swiftrouter/migratingfromversion1)
 
-SwiftRouter is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
+## Contributing
 
----
+Bug reports and pull requests are welcome; [CONTRIBUTING.md](CONTRIBUTING.md) explains how to
+run the tests and the example app. Report security issues privately as described in
+[SECURITY.md](SECURITY.md).
 
-<p align="center">
-  <sub>Built with ❤️ for the iOS community</sub>
-</p>
+## License
 
-<p align="center">
-  <a href="https://github.com/muhittincamdali/SwiftRouter/stargazers">⭐ Star us on GitHub</a>
-</p>
+SwiftRouter is available under the MIT license. See [LICENSE](LICENSE).

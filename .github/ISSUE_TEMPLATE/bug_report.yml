@@ -1,43 +1,49 @@
-name: 🐛 Bug Report
-description: Report a bug to help us improve
-labels: ["bug", "triage"]
+name: Bug report
+description: Something in SwiftRouter does not work as documented
+labels: ["bug"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        A deep link that gets past the documented checks, or a screen shown without its guard, is a security issue: report it privately (see SECURITY.md), not here.
+
   - type: textarea
     id: description
     attributes:
-      label: Describe the bug
-      description: A clear description of what the bug is.
+      label: What happened
+      description: The navigation calls, deep link or taps, the screens you expected and the screens you got.
     validations:
       required: true
-      
+
   - type: textarea
     id: reproduction
     attributes:
-      label: Steps to reproduce
-      placeholder: |
-        1. Go to '...'
-        2. Click on '...'
-        3. See error
+      label: Code that shows it
+      description: A small route enum and view, or the URL and the DeepLinks patterns.
+      render: swift
     validations:
       required: true
-      
-  - type: textarea
-    id: expected
-    attributes:
-      label: Expected behavior
-    validations:
-      required: true
-      
+
   - type: input
-    id: ios-version
+    id: version
     attributes:
-      label: iOS Version
-      placeholder: "17.0"
+      label: SwiftRouter version
+      placeholder: "2.0.0"
     validations:
       required: true
-      
+
   - type: input
-    id: swift-version
+    id: platform
     attributes:
-      label: Swift Version
-      placeholder: "5.9"
+      label: Platform and OS version
+      placeholder: "iOS 27.0 simulator"
+    validations:
+      required: true
+
+  - type: input
+    id: xcode
+    attributes:
+      label: Xcode version
+      placeholder: "27.1"
+    validations:
+      required: true
